@@ -36,5 +36,9 @@
   "dependencies": {
     "axios": "^1.4.0",
     "ws": "^8.13.0"
-  }
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "engineStrict": true
 }
