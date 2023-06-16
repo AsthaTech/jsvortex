@@ -16,7 +16,7 @@ function parseJson(fileName: any){
 runtests()
 
 function runtests() {
-    var api =  new VortexAPI("TYB7g0bdJFvvQOfIXsgquaDfupLieYZlOHNMRAeO","dev_hK7M2HWR")
+    var api =  new VortexAPI("api_secret","application_id")
     nock(api.base_url)
         .get("/user/funds")
         .reply(200, parseJson("funds.json"))
