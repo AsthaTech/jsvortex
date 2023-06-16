@@ -3,7 +3,6 @@
 import axios, { Method } from 'axios';
 import * as Constants from "./types";
 import * as csvParse from 'csv-parse';
-import * as fs from 'fs';
 /**
  * VortexAPI is a class that provides methods to interact with the Vortex REST API.
  */
@@ -380,10 +379,10 @@ export class VortexAPI {
             const response = await axios.get(this.base_url + endpoint, { headers });
             const decoded_content = response.data;
             const results: Record<string, string>[] = [];
-        
-            await new Promise<void>((resolve, reject) => {
-                
-                csvParse.parse(decoded_content)
+            await new Promise<void>((resolve, reject) => {                
+                csvParse.parse(decoded_content,{
+                    columns: true,
+                })
                 .on('data', (row) => {
                   results.push(row);
                 })

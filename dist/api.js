@@ -389,7 +389,9 @@ class VortexAPI {
                 const decoded_content = response.data;
                 const results = [];
                 yield new Promise((resolve, reject) => {
-                    csvParse.parse(decoded_content)
+                    csvParse.parse(decoded_content, {
+                        columns: true,
+                    })
                         .on('data', (row) => {
                         results.push(row);
                     })

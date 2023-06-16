@@ -1,6 +1,6 @@
 {
   "name": "@asthatrade/jsvortex",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Vortex APIs to place orders in AsthaTrade Flow application",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,7 @@
   "private": false,
   "scripts": {
     "test": "jest",
+    "pre-deploy": "tsc && typedoc --out docs src/index.ts",
     "generate-docs": "typedoc --out docs src/index.ts"
   },
   "keywords": [
