@@ -41,6 +41,22 @@ export class VortexAPI {
         if (this.enable_logging) {
             console.log(`Making network call to ${url}, params: ${JSON.stringify(params)}, data: ${JSON.stringify(data)}, headers: ${JSON.stringify(headers)}`);
         }
+        if(params){
+            var params2 = new URLSearchParams();
+            var keys = Object.keys(params) as Array<keyof typeof params>
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i]; 
+                if(!Array.isArray(params[key])){
+                    params2.append(key, params[key]);
+                }else{
+                    for (let j = 0; j < (params[key] as any[]).length; j++) {
+                        const element = (params[key] as any[])[j];
+                        params2.append(key,element)
+                    }
+                }
+            }
+            params = params2
+        }
         return axios.request<T>({
             method,
             url,
