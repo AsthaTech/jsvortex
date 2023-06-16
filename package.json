@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "author": "Shauryam Gupta",
   "license": "MIT",
+  "homepage": "https://github.com/AsthaTech/jsvortex",
   "private": false,
   "scripts": {
     "test": "jest",
