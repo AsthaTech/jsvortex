@@ -306,6 +306,16 @@ class VortexAPI {
         });
     }
     /**
+    * Retrieves the todays's trades of the user.
+    * @returns A Promise that resolves to a trades response.
+    */
+    trades() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const endpoint = "/trades";
+            return this._make_api_request("GET", endpoint);
+        });
+    }
+    /**
      * Retrieves the funds of the user.
      * @returns A Promise that resolves to a funds response.
      */
