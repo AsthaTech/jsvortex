@@ -122,4 +122,5 @@ export declare class VortexAPI {
     * @returns A Promise that resolves to a historical response.
     */
     historical_candles(exchange: Constants.ExchangeTypes, token: number, to: Date, start: Date, resolution: Constants.Resolutions): Promise<Constants.HistoricalResponse>;
+    downloadMaster(): Promise<Record<string, string>[]>;
 }

@@ -38,6 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VortexAPI = void 0;
 const axios_1 = __importDefault(require("axios"));
 const Constants = __importStar(require("./types"));
+const csvParse = __importStar(require("csv-parse"));
 /**
  * VortexAPI is a class that provides methods to interact with the Vortex REST API.
  */
@@ -373,6 +374,37 @@ class VortexAPI {
             const endpoint = "/data/history";
             const params = { "exchange": exchange, "token": token, "to": Math.floor(to.getTime() / 1000), "from": Math.floor(start.getTime() / 1000), "resolution": resolution };
             return this._make_api_request("GET", endpoint, null, params);
+        });
+    }
+    downloadMaster() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const endpoint = '/data/instruments';
+            const bearer_token = `Bearer ${this.access_token}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                Authorization: bearer_token,
+            };
+            try {
+                const response = yield axios_1.default.get(this.base_url + endpoint, { headers });
+                const decoded_content = response.data;
+                const results = [];
+                yield new Promise((resolve, reject) => {
+                    csvParse.parse(decoded_content)
+                        .on('data', (row) => {
+                        results.push(row);
+                    })
+                        .on('error', (error) => {
+                        reject(error);
+                    })
+                        .on('end', () => {
+                        resolve();
+                    });
+                });
+                return results;
+            }
+            catch (e) {
+                throw new Error(e);
+            }
         });
     }
 }
