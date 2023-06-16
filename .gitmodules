@@ -1,0 +1,3 @@
+[submodule "tests/vortex-mocks"]
+	path = tests/vortex-mocks
+	url = git@github.com:AsthaTech/vortex-mocks.git
