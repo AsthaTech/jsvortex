@@ -301,8 +301,8 @@ export class VortexAPI {
     * @returns A Promise that resolves to a trades response.
     */
 
-    async trades(): Promise<Constants.TradeBookResponse> {
-        const endpoint = "/trades"
+    async trades(limit: number, offset: number): Promise<Constants.TradeBookResponse> {
+        const endpoint = `/trades?limit=${limit}&offset=${offset}`
         return this._make_api_request<Constants.TradeBookResponse>("GET", endpoint);
     }
 
