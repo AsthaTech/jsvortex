@@ -1,5 +1,5 @@
 {
-  "name": "@asthatrade/vortexjs",
+  "name": "@asthatrade/jsvortex",
   "version": "1.0.0",
   "description": "Vortex APIs to place orders in AsthaTrade Flow application",
   "main": "dist/index.js",
