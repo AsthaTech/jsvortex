@@ -89,7 +89,7 @@ export declare class VortexAPI {
     * Retrieves the todays's trades of the user.
     * @returns A Promise that resolves to a trades response.
     */
-    trades(): Promise<Constants.TradeBookResponse>;
+    trades(limit: number, offset: number): Promise<Constants.TradeBookResponse>;
     /**
      * Retrieves the funds of the user.
      * @returns A Promise that resolves to a funds response.

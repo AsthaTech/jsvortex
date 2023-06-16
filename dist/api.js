@@ -309,9 +309,9 @@ class VortexAPI {
     * Retrieves the todays's trades of the user.
     * @returns A Promise that resolves to a trades response.
     */
-    trades() {
+    trades(limit, offset) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/trades";
+            const endpoint = `/trades?limit=${limit}&offset=${offset}`;
             return this._make_api_request("GET", endpoint);
         });
     }
