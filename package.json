@@ -1,6 +1,6 @@
 {
   "name": "@asthatrade/jsvortex",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Vortex APIs to place orders in AsthaTrade Flow application",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
