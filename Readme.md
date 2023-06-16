@@ -96,3 +96,15 @@ function onError(reason){
 
 
 ```
+
+## Run Tests 
+
+```
+yarn test
+```
+
+## Generate Docs
+
+```
+yarn generate-docs
+```
