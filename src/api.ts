@@ -2,7 +2,8 @@
 
 import axios, { Method } from 'axios';
 import * as Constants from "./types";
-
+import * as csvParse from 'csv-parse';
+import * as fs from 'fs';
 /**
  * VortexAPI is a class that provides methods to interact with the Vortex REST API.
  */
@@ -41,17 +42,17 @@ export class VortexAPI {
         if (this.enable_logging) {
             console.log(`Making network call to ${url}, params: ${JSON.stringify(params)}, data: ${JSON.stringify(data)}, headers: ${JSON.stringify(headers)}`);
         }
-        if(params){
+        if (params) {
             var params2 = new URLSearchParams();
             var keys = Object.keys(params) as Array<keyof typeof params>
             for (let i = 0; i < keys.length; i++) {
-                const key = keys[i]; 
-                if(!Array.isArray(params[key])){
+                const key = keys[i];
+                if (!Array.isArray(params[key])) {
                     params2.append(key, params[key]);
-                }else{
+                } else {
                     for (let j = 0; j < (params[key] as any[]).length; j++) {
                         const element = (params[key] as any[])[j];
-                        params2.append(key,element)
+                        params2.append(key, element)
                     }
                 }
             }
@@ -364,4 +365,40 @@ export class VortexAPI {
         const params = { "exchange": exchange, "token": token, "to": Math.floor(to.getTime() / 1000), "from": Math.floor(start.getTime() / 1000), "resolution": resolution }
         return this._make_api_request<Constants.HistoricalResponse>("GET", endpoint, null, params);
     }
+
+
+
+    async downloadMaster(): Promise<Record<string, string>[]> {
+        const endpoint = '/data/instruments';
+        const bearer_token = `Bearer ${this.access_token}`;
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: bearer_token,
+        };
+
+        try {
+            const response = await axios.get(this.base_url + endpoint, { headers });
+            const decoded_content = response.data;
+            const results: Record<string, string>[] = [];
+        
+            await new Promise<void>((resolve, reject) => {
+                
+                csvParse.parse(decoded_content)
+                .on('data', (row) => {
+                  results.push(row);
+                })
+                .on('error', (error) => {
+                  reject(error);
+                })
+                .on('end', () => {
+                  resolve();
+                });
+            });
+        
+            return results;
+          } catch (e) {
+            throw new Error(e as string);
+          }
+    }
+
 }
