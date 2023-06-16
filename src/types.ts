@@ -275,3 +275,34 @@ export enum OrderMarginModes {
     NEW_ORDER = "NEW",
     MODIFY_ORDER = "MODIFY"
 }
+
+export interface Trade {
+    order_id: string;
+    exchange: string;
+    token: number;
+    trade_no: string;
+    exchange_order_no: string;
+    transaction_type: string;
+    product: string;
+    variety: string;
+    trade_quantity: number;
+    trade_price: number;
+    symbol: string;
+    series: string;
+    instrument_name: string;
+    expiry_date: string;
+    strike_price: number;
+    option_type: string;
+    traded_at: string;
+    initiated_by: string;
+    modified_by: string;
+    order_identifier: string;
+  }  
+export interface TradeBookResponse {
+    status: string;
+    trades: Trade[];
+    metadata: {
+        total_records: number;
+    };
+  }
+  

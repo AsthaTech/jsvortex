@@ -27,6 +27,9 @@ function runtests() {
         .get("/portfolio/holdings")
         .reply(200, parseJson("holdings.json"))
 
+        .get("/trades")
+        .reply(200, parseJson("trades.json"))
+
         .get("/orders?limit=20&offset=1")
         .reply(200, parseJson("orders.json"))
 
@@ -60,6 +63,15 @@ function runtests() {
             const res = await api.positions()
             console.log(res)
             expect(res.data).toBeDefined
+        })
+    })
+
+    describe('trades', ()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.trades()
+            console.log(res)
+            expect(res.trades).toBeDefined
         })
     })
 

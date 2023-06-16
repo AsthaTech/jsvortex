@@ -297,6 +297,16 @@ export class VortexAPI {
     }
 
     /**
+    * Retrieves the todays's trades of the user.
+    * @returns A Promise that resolves to a trades response.
+    */
+
+    async trades(): Promise<Constants.TradeBookResponse> {
+        const endpoint = "/trades"
+        return this._make_api_request<Constants.TradeBookResponse>("GET", endpoint);
+    }
+
+    /**
      * Retrieves the funds of the user.
      * @returns A Promise that resolves to a funds response.
      */
