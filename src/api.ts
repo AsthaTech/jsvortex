@@ -151,6 +151,10 @@ export class VortexAPI {
      * @param validity The validity type for the order.
      * @returns A Promise that resolves to an order response.
      */
+
+    setAccessToken(accessToken:string){
+        this.access_token = accessToken
+    }
     async placeOrder(
         exchange: Constants.ExchangeTypes,
         token: number,

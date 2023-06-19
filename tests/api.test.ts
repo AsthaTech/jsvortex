@@ -38,6 +38,9 @@ function runtests() {
 
         .post("/margins/order")
         .reply(200,parseJson("margin.json"))
+
+        .delete("/orders/regular/NSE_EQ/NXAAAE43234234")
+        .reply(200,parseJson("order.json"))
         
 
     describe('funds', ()=>{
@@ -88,6 +91,15 @@ function runtests() {
         it("is success", async ()=>{
             // expect.assertions(2)
             const res = await api.placeOrder(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,Constants.ProductTypes.DELIVERY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,1800,0,0,Constants.ValidityTypes.FULL_DAY)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data.orderId).toBeDefined
+        })
+    })
+    describe('order cancellation', ()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.cancel_order(Constants.ExchangeTypes.NSE_EQUITY,"NXAAAE43234234")
             console.log(res)
             expect(res.data).toBeDefined
             expect(res.data.orderId).toBeDefined

@@ -41,6 +41,7 @@ export declare class VortexAPI {
      * @param validity The validity type for the order.
      * @returns A Promise that resolves to an order response.
      */
+    setAccessToken(accessToken: string): void;
     placeOrder(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
     /**
      * Modifies an existing order with the specified parameters.

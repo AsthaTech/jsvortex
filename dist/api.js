@@ -180,6 +180,9 @@ class VortexAPI {
      * @param validity The validity type for the order.
      * @returns A Promise that resolves to an order response.
      */
+    setAccessToken(accessToken) {
+        this.access_token = accessToken;
+    }
     placeOrder(exchange, token, transaction_type, product, variety, quantity, price, trigger_price, disclosed_quantity, validity) {
         return __awaiter(this, void 0, void 0, function* () {
             const endpoint = "/orders/regular";
