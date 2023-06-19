@@ -57,13 +57,15 @@ export class VortexAPI {
             }
             params = params2
         }
-        return axios.request<T>({
-            method,
-            url,
-            headers,
-            data,
-            params,
-        })
+
+        var config:any  = {method,url,headers}; 
+        if( data != null) {
+           config.data = data 
+        }
+        if( params != null) {
+            config.params = params 
+         }
+        return axios.request<T>(config)
             .then((response) => {
                 if (this.enable_logging) {
                     console.log(`Response received from ${url}, body: ${JSON.stringify(response.data)}`);
