@@ -123,6 +123,12 @@ export interface PositionResponse {
         day: Position[];
     };
 }
+
+export interface ConvertPositionResponse{
+    status: string, 
+    code: string, 
+    message: string
+}
 export interface Position {
     exchange: string;
     symbol: string;

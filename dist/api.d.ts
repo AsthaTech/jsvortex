@@ -82,6 +82,11 @@ export declare class VortexAPI {
     */
     positions(): Promise<Constants.PositionResponse>;
     /**
+   * Converts position's product type .
+   * @returns A Promise that resolves to a convert position's response.
+   */
+    convert_position(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse>;
+    /**
     * Retrieves the holdings of the user.
     * @returns A Promise that resolves to a holdings response.
     */

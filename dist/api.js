@@ -300,6 +300,19 @@ class VortexAPI {
         });
     }
     /**
+   * Converts position's product type .
+   * @returns A Promise that resolves to a convert position's response.
+   */
+    convert_position(exchange, token, transaction_type, quantity, old_product_type, new_product_type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const endpoint = "/portfolio/positions";
+            var data = {
+                exchange, token, transaction_type, quantity, old_product_type, new_product_type
+            };
+            return this._make_api_request("PUT", endpoint, data, null);
+        });
+    }
+    /**
     * Retrieves the holdings of the user.
     * @returns A Promise that resolves to a holdings response.
     */

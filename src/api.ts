@@ -292,6 +292,19 @@ export class VortexAPI {
         const endpoint = "/portfolio/positions"
         return this._make_api_request<Constants.PositionResponse>("GET", endpoint);
     }
+
+
+     /**
+    * Converts position's product type .
+    * @returns A Promise that resolves to a convert position's response.
+    */
+     async convert_position(exchange: Constants.ExchangeTypes, token: number , transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse> {
+        const endpoint = "/portfolio/positions"
+        var data = {
+            exchange,token,transaction_type,quantity,old_product_type,new_product_type
+        }
+        return this._make_api_request<Constants.ConvertPositionResponse>("PUT", endpoint,data,null);
+    }
     /**
     * Retrieves the holdings of the user.
     * @returns A Promise that resolves to a holdings response.

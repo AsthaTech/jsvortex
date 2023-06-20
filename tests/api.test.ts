@@ -41,6 +41,9 @@ function runtests() {
 
         .delete("/orders/regular/NSE_EQ/NXAAAE43234234")
         .reply(200,parseJson("order.json"))
+
+        .put("/portfolio/positions")
+        .reply(200,parseJson("position_conversion.json"))
         
 
     describe('funds', ()=>{
@@ -113,6 +116,17 @@ function runtests() {
             console.log(res)
             expect(res.available).toBeDefined
             expect(res.required).toBeDefined
+        })
+    })
+
+    describe('position conversion',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.convert_position(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,2,Constants.ProductTypes.INTRADAY,Constants.ProductTypes.DELIVERY)
+            console.log(res)
+            expect(res.code).toBeDefined
+            expect(res.message).toBeDefined
+            expect(res.status).toBeDefined
         })
     })
 }
