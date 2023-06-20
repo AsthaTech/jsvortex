@@ -41,8 +41,8 @@ export declare class VortexAPI {
      * @param validity The validity type for the order.
      * @returns A Promise that resolves to an order response.
      */
-    setAccessToken(accessToken: string): void;
-    placeOrder(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
+    set_access_token(accessToken: string): void;
+    place_order(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
     /**
      * Modifies an existing order with the specified parameters.
      * @param exchange The exchange type of the order.
@@ -56,7 +56,7 @@ export declare class VortexAPI {
      * @param validity The validity type for the modified order.
      * @returns A Promise that resolves to an order response.
      */
-    modifyOrder(exchange: Constants.ExchangeTypes, order_id: string, variety: Constants.VarietyTypes, quantity: number, traded_quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
+    modify_order(exchange: Constants.ExchangeTypes, order_id: string, variety: Constants.VarietyTypes, quantity: number, traded_quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
     /**
     * Cancels an order with the specified exchange and order ID.
     * @param exchange The exchange type of the order.
@@ -133,5 +133,5 @@ export declare class VortexAPI {
     * @returns A Promise that resolves to a historical response.
     */
     historical_candles(exchange: Constants.ExchangeTypes, token: number, to: Date, start: Date, resolution: Constants.Resolutions): Promise<Constants.HistoricalResponse>;
-    downloadMaster(): Promise<Record<string, string>[]>;
+    download_master(): Promise<Record<string, string>[]>;
 }

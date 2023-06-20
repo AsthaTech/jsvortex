@@ -45,7 +45,7 @@ async function run(){
     console.log("positions",positions)
 
     client.quotes(["NSE_EQ-22"],Constants.QuoteModes.LTP).then((res)=>{
-        return client.placeOrder(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.SELL,Constants.ProductTypes.INTRADAY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,res.data["NSE_EQ-22"].last_trade_price,0,0,Constants.ValidityTypes.FULL_DAY)
+        return client.place_order(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.SELL,Constants.ProductTypes.INTRADAY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,res.data["NSE_EQ-22"].last_trade_price,0,0,Constants.ValidityTypes.FULL_DAY)
     })
     .then((res)=>{
         console.log(res)

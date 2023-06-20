@@ -58,13 +58,13 @@ export class VortexAPI {
             params = params2
         }
 
-        var config:any  = {method,url,headers}; 
-        if( data != null) {
-           config.data = data 
+        var config: any = { method, url, headers };
+        if (data != null) {
+            config.data = data
         }
-        if( params != null) {
-            config.params = params 
-         }
+        if (params != null) {
+            config.params = params
+        }
         return axios.request<T>(config)
             .then((response) => {
                 if (this.enable_logging) {
@@ -154,10 +154,10 @@ export class VortexAPI {
      * @returns A Promise that resolves to an order response.
      */
 
-    setAccessToken(accessToken:string){
+    set_access_token(accessToken: string) {
         this.access_token = accessToken
     }
-    async placeOrder(
+    async place_order(
         exchange: Constants.ExchangeTypes,
         token: number,
         transaction_type: Constants.TransactionTypes,
@@ -216,7 +216,7 @@ export class VortexAPI {
      * @param validity The validity type for the modified order.
      * @returns A Promise that resolves to an order response.
      */
-    async modifyOrder(
+    async modify_order(
         exchange: Constants.ExchangeTypes,
         order_id: string,
         variety: Constants.VarietyTypes,
@@ -294,16 +294,16 @@ export class VortexAPI {
     }
 
 
-     /**
-    * Converts position's product type .
-    * @returns A Promise that resolves to a convert position's response.
-    */
-     async convert_position(exchange: Constants.ExchangeTypes, token: number , transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse> {
+    /**
+   * Converts position's product type .
+   * @returns A Promise that resolves to a convert position's response.
+   */
+    async convert_position(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse> {
         const endpoint = "/portfolio/positions"
         var data = {
-            exchange,token,transaction_type,quantity,old_product_type,new_product_type
+            exchange, token, transaction_type, quantity, old_product_type, new_product_type
         }
-        return this._make_api_request<Constants.ConvertPositionResponse>("PUT", endpoint,data,null);
+        return this._make_api_request<Constants.ConvertPositionResponse>("PUT", endpoint, data, null);
     }
     /**
     * Retrieves the holdings of the user.
@@ -396,7 +396,7 @@ export class VortexAPI {
 
 
 
-    async downloadMaster(): Promise<Record<string, string>[]> {
+    async download_master(): Promise<Record<string, string>[]> {
         const endpoint = '/data/instruments';
         const bearer_token = `Bearer ${this.access_token}`;
         const headers = {
@@ -408,25 +408,25 @@ export class VortexAPI {
             const response = await axios.get(this.base_url + endpoint, { headers });
             const decoded_content = response.data;
             const results: Record<string, string>[] = [];
-            await new Promise<void>((resolve, reject) => {                
-                csvParse.parse(decoded_content,{
+            await new Promise<void>((resolve, reject) => {
+                csvParse.parse(decoded_content, {
                     columns: true,
                 })
-                .on('data', (row) => {
-                  results.push(row);
-                })
-                .on('error', (error) => {
-                  reject(error);
-                })
-                .on('end', () => {
-                  resolve();
-                });
+                    .on('data', (row) => {
+                        results.push(row);
+                    })
+                    .on('error', (error) => {
+                        reject(error);
+                    })
+                    .on('end', () => {
+                        resolve();
+                    });
             });
-        
+
             return results;
-          } catch (e) {
+        } catch (e) {
             throw new Error(e as string);
-          }
+        }
     }
 
 }

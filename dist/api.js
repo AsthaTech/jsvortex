@@ -181,10 +181,10 @@ class VortexAPI {
      * @param validity The validity type for the order.
      * @returns A Promise that resolves to an order response.
      */
-    setAccessToken(accessToken) {
+    set_access_token(accessToken) {
         this.access_token = accessToken;
     }
-    placeOrder(exchange, token, transaction_type, product, variety, quantity, price, trigger_price, disclosed_quantity, validity) {
+    place_order(exchange, token, transaction_type, product, variety, quantity, price, trigger_price, disclosed_quantity, validity) {
         return __awaiter(this, void 0, void 0, function* () {
             const endpoint = "/orders/regular";
             let validity_days;
@@ -231,7 +231,7 @@ class VortexAPI {
      * @param validity The validity type for the modified order.
      * @returns A Promise that resolves to an order response.
      */
-    modifyOrder(exchange, order_id, variety, quantity, traded_quantity, price, trigger_price, disclosed_quantity, validity) {
+    modify_order(exchange, order_id, variety, quantity, traded_quantity, price, trigger_price, disclosed_quantity, validity) {
         return __awaiter(this, void 0, void 0, function* () {
             const endpoint = `/orders/regular/${exchange}/${order_id}`;
             let validity_days;
@@ -403,7 +403,7 @@ class VortexAPI {
             return this._make_api_request("GET", endpoint, null, params);
         });
     }
-    downloadMaster() {
+    download_master() {
         return __awaiter(this, void 0, void 0, function* () {
             const endpoint = '/data/instruments';
             const bearer_token = `Bearer ${this.access_token}`;

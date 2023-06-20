@@ -93,7 +93,7 @@ function runtests() {
     describe('order placement', ()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.placeOrder(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,Constants.ProductTypes.DELIVERY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,1800,0,0,Constants.ValidityTypes.FULL_DAY)
+            const res = await api.place_order(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,Constants.ProductTypes.DELIVERY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,1800,0,0,Constants.ValidityTypes.FULL_DAY)
             console.log(res)
             expect(res.data).toBeDefined
             expect(res.data.orderId).toBeDefined
