@@ -33,6 +33,9 @@ function runtests() {
         .get("/orders?limit=20&offset=1")
         .reply(200, parseJson("orders.json"))
 
+        .get("/orders/test")
+        .reply(200, parseJson("order_history.json"))
+
         .post("/orders/regular")
         .reply(200,parseJson("order.json"))
 
@@ -127,6 +130,16 @@ function runtests() {
             expect(res.code).toBeDefined
             expect(res.message).toBeDefined
             expect(res.status).toBeDefined
+        })
+    })
+
+    describe('order history',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.order_history("test")
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data[0]).toBeDefined
         })
     })
 }
