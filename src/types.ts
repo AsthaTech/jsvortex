@@ -94,12 +94,12 @@ export interface Holding {
     isin: string;
     nse: {
         token: number;
-        exchange: string;
+        exchange: ExchangeTypes;
         symbol: string;
     };
     bse: {
         token: number;
-        exchange: string;
+        exchange: ExchangeTypes;
         symbol: string;
     };
     total_free: number;
@@ -130,12 +130,12 @@ export interface ConvertPositionResponse{
     message: string
 }
 export interface Position {
-    exchange: string;
+    exchange: ExchangeTypes;
     symbol: string;
     expiry_date: string;
     option_type: string;
     token: number;
-    product: string;
+    product: ProductTypes;
     quantity: number;
     overnight_buy_value: number;
     overnight_sell_value: number;
@@ -154,14 +154,14 @@ export interface Position {
 
 export interface Order {
     order_id: string;
-    exchange: string;
+    exchange: ExchangeTypes;
     token: number;
     order_number: string;
     status: string;
     error_reason: string;
-    transaction_type: string;
-    product: string;
-    variety: string;
+    transaction_type: TransactionTypes;
+    product: ProductTypes;
+    variety: VarietyTypes;
     total_quantity: number;
     pending_quantity: number;
     traded_quantity: number;
@@ -170,7 +170,7 @@ export interface Order {
     order_price: number;
     trigger_price: number;
     traded_price: number;
-    validity: string;
+    validity: ValidityTypes;
     validity_days: number;
     symbol: string;
     series: string;
@@ -195,6 +195,46 @@ export interface OrderBookResponse {
         completed_records: number;
         open_records: number;
     };
+}
+
+export interface OrderHistoryResponse{
+    status: string;
+    data: OrderHistory[];
+    metadata: {
+        total_records: number; 
+    };
+}
+
+export interface OrderHistory{
+    order_id: string;
+    exchange: ExchangeTypes;
+    token: number;
+    order_number: string;
+    status: string;
+    error_reason: string;
+    transaction_type: TransactionTypes;
+    product: ProductTypes;
+    variety: VarietyTypes;
+    total_quantity: number;
+    pending_quantity: number;
+    traded_quantity: number;
+    disclosed_quantity: number;
+    order_price: number;
+    trigger_price: number;
+    validity: ValidityTypes;
+    validity_days: number;
+    symbol: string;
+    series: string;
+    instrument_name: string;
+    expiry_date: string;
+    strike_price: number;
+    option_type: string;
+    lot_size: number;
+    order_created_at: string;
+    initiated_by: string;
+    modified_by: string;
+    is_amo: boolean;
+    order_identifier: string;
 }
 export interface LoginResponse {
     status: string;
@@ -284,13 +324,13 @@ export enum OrderMarginModes {
 
 export interface Trade {
     order_id: string;
-    exchange: string;
+    exchange: ExchangeTypes;
     token: number;
     trade_no: string;
     exchange_order_no: string;
-    transaction_type: string;
-    product: string;
-    variety: string;
+    transaction_type: TransactionTypes;
+    product: ProductTypes;
+    variety: VarietyTypes;
     trade_quantity: number;
     trade_price: number;
     symbol: string;

@@ -75,7 +75,7 @@ export declare class VortexAPI {
      * Retrieves the order history for a specific order.
      * @param order_id The ID of the order to retrieve the history for.
      */
-    order_history(order_id: string): Promise<void>;
+    order_history(order_id: string): Promise<Constants.OrderHistoryResponse>;
     /**
     * Retrieves the positions of the user.
     * @returns A Promise that resolves to a position response.
