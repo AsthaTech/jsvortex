@@ -86,7 +86,7 @@ function runtests() {
             // expect.assertions(2)
             const res = await api.orders(20,1)
             console.log(res)
-            expect(res.orders).toBeDefined
+            expect(res.orders[0].exchange).toEqual(Constants.ExchangeTypes.NSE_EQUITY)
         })
     })
 

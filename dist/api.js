@@ -287,6 +287,8 @@ class VortexAPI {
      */
     order_history(order_id) {
         return __awaiter(this, void 0, void 0, function* () {
+            const endpoint = `/orders/${order_id}`;
+            return this._make_api_request("GET", endpoint);
         });
     }
     /**

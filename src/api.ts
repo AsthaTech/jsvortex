@@ -281,7 +281,8 @@ export class VortexAPI {
      */
 
     async order_history(order_id: string) {
-
+        const endpoint = `/orders/${order_id}`
+        return this._make_api_request<Constants.OrderBookResponse>("GET", endpoint);
     }
 
     /**
