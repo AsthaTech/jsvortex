@@ -10,7 +10,7 @@ export class VortexAPI {
     private api_key: string;
     private application_id: string;
     public base_url: string;
-    private access_token: string | null;
+    public access_token: string | null;
     private enable_logging: boolean;
 
     /**
@@ -111,14 +111,13 @@ export class VortexAPI {
     * @returns A Promise that resolves to a login response.
     */
     async login(client_code: string, password: string, totp: string): Promise<Constants.LoginResponse> {
-        const endpoint: string = "/user/login";
         const data: object = {
             client_code: client_code,
             password: password,
             totp: totp,
             application_id: this.application_id,
         };
-        return this._make_unauth_request<Constants.LoginResponse>("POST", endpoint, data)
+        return this._make_unauth_request<Constants.LoginResponse>("POST", Constants.URILogin, data)
             .then((res) => {
                 this._setup_client_code(res)
                 // Call _setup_client_code method here if needed
