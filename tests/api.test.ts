@@ -1,3 +1,4 @@
+import exp from "constants";
 import {VortexAPI} from "../src/index"
 import * as Constants from  "../src/types";
 import * as fs from 'fs';
@@ -17,37 +18,82 @@ runtests()
 
 function runtests() {
     var api =  new VortexAPI("api_secret","application_id")
+    const from = new Date()
+    const to = new Date()
+    const from_time = Math.floor(from.getTime() / 1000)
+    const to_time = Math.floor(to.getTime() / 1000)
     nock(api.base_url)
-        .get("/user/funds")
-        .reply(200, parseJson("funds.json"))
+        .get(Constants.URIFunds)
+        .reply(200, parseJson("user/funds.json"))
 
-        .get("/portfolio/positions")
-        .reply(200, parseJson("positions.json"))
+        .get(Constants.URIPositions)
+        .reply(200, parseJson("portfolio/positions.json"))
 
-        .get("/portfolio/holdings")
-        .reply(200, parseJson("holdings.json"))
+        .get(Constants.URIHoldings)
+        .reply(200, parseJson("portfolio/holdings.json"))
 
-        .get("/trades?limit=20&offset=1")
-        .reply(200, parseJson("trades.json"))
+        .get(Constants.URITrades)
+        .reply(200, parseJson("portfolio/trades.json"))
 
-        .get("/orders?limit=20&offset=1")
-        .reply(200, parseJson("orders.json"))
+        .get(Constants.URIOrderBook)
+        .reply(200, parseJson("portfolio/orders.json"))
 
-        .get("/orders/test")
-        .reply(200, parseJson("order_history.json"))
+        .get(Constants.URIGttOrderBook)
+        .reply(200, parseJson("gtt_orders/list.json"))
 
-        .post("/orders/regular")
-        .reply(200,parseJson("order.json"))
+        .get(constructUrl(Constants.URIOrderHistory,"test"))
+        .reply(200, parseJson("regular_orders/order_history.json"))
 
-        .post("/margins/order")
-        .reply(200,parseJson("margin.json"))
+        .post(constructUrl(Constants.URIPlaceOrder,"regular")) //for full day validity
+        .reply(200,parseJson("regular_orders/order.json"))
 
-        .delete("/orders/regular/NSE_EQ/NXAAAE43234234")
-        .reply(200,parseJson("order.json"))
+        .post(constructUrl(Constants.URIPlaceOrder,"regular")) //for IOC validity
+        .reply(200,parseJson("regular_orders/order.json"))
 
-        .put("/portfolio/positions")
-        .reply(200,parseJson("position_conversion.json"))
+        .post(constructUrl(Constants.URIPlaceOrder,"regular")) //for AMO validity
+        .reply(200,parseJson("regular_orders/order.json"))
+
+        .post(constructUrl(Constants.URIPlaceOrder,"gtt"))
+        .reply(200,parseJson("gtt_orders/create.json"))
+
+        .post(constructUrl(Constants.URIPlaceOrder,"iceberg"))
+        .reply(200,parseJson("iceberg_orders/create.json"))
+
+        .post(Constants.URIOrderMargin)
+        .reply(200,parseJson("margins/order_margin.json"))
+
+        .post(Constants.URIBasketMargin)
+        .reply(200,parseJson("margins/basket_margin.json"))
+
+        .delete(constructUrl(Constants.URIModifyOrder,"regular","NXAAAE43234234"))
+        .reply(200,parseJson("regular_orders/order.json"))
+
+        .delete(constructUrl(Constants.URIModifyOrder,"gtt","5a9da19d-400f-47ff-aabd-429a1c98ef26"))
+        .reply(200,parseJson("regular_orders/order.json"))
+
+        .put(Constants.URIConvertposition)
+        .reply(200,parseJson("portfolio/position_conversion.json"))
+
+        .put(constructUrl(Constants.URIModifyOrder,"regular","test"))
+        .reply(200,parseJson("regular_orders/order.json"))
+
+        .put(constructUrl(Constants.URIModifyOrder,"iceberg","test"))
+        .reply(200,parseJson("iceberg_orders/modify.json"))
+
+        .put(constructUrl(Constants.URIModifyOrder,"gtt","test"))
+        .reply(200,parseJson("gtt_orders/modify.json"))
         
+        .get(Constants.URIQuotes+"?q=NSE_EQ-22&mode=full")
+        .reply(200,parseJson("data/quotes.json"))
+
+        .get(Constants.URIHistory+"?exchange=NSE_EQ&token=22&to="+to_time.toString()+"&from="+from_time.toString()+"&resolution=1D")
+        .reply(200,parseJson("data/history.json"))
+
+        .post(Constants.URIMultiCancelrders)
+        .reply(200,parseJson("regular_orders/multi_cancel.json"))
+
+        .delete(constructUrl(Constants.URIModifyOrder,"iceberg","test"))
+        .reply(200,parseJson("iceberg_orders/delete.json"))
 
     describe('funds', ()=>{
         it("is success", async ()=>{
@@ -78,7 +124,7 @@ function runtests() {
     describe('trades', ()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.trades(20,1)
+            const res = await api.trades()
             console.log(res)
             expect(res.trades).toBeDefined
         })
@@ -87,45 +133,165 @@ function runtests() {
     describe('order book', ()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.orders(20,1)
+            const res = await api.orders()
             console.log(res)
-            expect(res.orders[0].exchange).toEqual(Constants.ExchangeTypes.NSE_EQUITY)
+            expect(res.orders[0].exchange).toEqual(Constants.ExchangeTypes.MCX)
         })
     })
 
     describe('order placement', ()=>{
-        it("is success", async ()=>{
+        it("is success for full day", async ()=>{
             // expect.assertions(2)
-            const res = await api.place_order(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,Constants.ProductTypes.DELIVERY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,1800,0,0,Constants.ValidityTypes.FULL_DAY)
+            const request: Constants.PlaceOrderRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                product: Constants.ProductTypes.DELIVERY,
+                quantity: 1,
+                price: 1800,
+                variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                disclosed_quantity: 0,
+                trigger_price: 0,
+                validity: Constants.ValidityTypes.FULL_DAY
+            }
+            const res = await api.place_order(request)
             console.log(res)
             expect(res.data).toBeDefined
-            expect(res.data.orderId).toBeDefined
+            expect(res.data.order_id).toBeDefined
+            expect(res.data.order_id).toEqual('NXAAE00002K3')
+        })
+        it("is success for IOC", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.PlaceOrderRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                product: Constants.ProductTypes.DELIVERY,
+                quantity: 1,
+                price: 1800,
+                variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                disclosed_quantity: 0,
+                trigger_price: 0,
+                validity: Constants.ValidityTypes.IMMEDIATE_OR_CANCEL
+            }
+            const res = await api.place_order(request)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data.order_id).toBeDefined
+            expect(res.data.order_id).toEqual('NXAAE00002K3')
+        })
+        it("is success for after market", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.PlaceOrderRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                product: Constants.ProductTypes.DELIVERY,
+                quantity: 1,
+                price: 1800,
+                variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                disclosed_quantity: 0,
+                trigger_price: 0,
+                validity: Constants.ValidityTypes.AFTER_MARKET
+            }
+            const res = await api.place_order(request)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data.order_id).toBeDefined
+            expect(res.data.order_id).toEqual('NXAAE00002K3')
         })
     })
     describe('order cancellation', ()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.cancel_order(Constants.ExchangeTypes.NSE_EQUITY,"NXAAAE43234234")
+            const res = await api.cancel_order("NXAAAE43234234")
             console.log(res)
             expect(res.data).toBeDefined
-            expect(res.data.orderId).toBeDefined
+            expect(res.data.order_id).toBeDefined
         })
+    })
+
+    describe('iceberg order placement',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.PlaceIcebergOrderRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                product: Constants.ProductTypes.DELIVERY,
+                quantity: 1,
+                price: 1800,
+                trigger_price: 0,
+                variety: Constants.VarietyTypes.REGULAR_LIMIT_ORDER,
+                validity: Constants.ValidityTypes.FULL_DAY,
+                legs:2,
+            }
+            const res = await api.place_iceberg_order(request)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data?.first_order_id).toBeDefined
+            expect(res.data?.iceberg_order_id).toBeDefined
+        })
+    
     })
 
     describe('order margin required', ()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.get_order_margin(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,Constants.ProductTypes.DELIVERY,Constants.VarietyTypes.REGULAR_MARKET_ORDER,1,1800,Constants.OrderMarginModes.NEW_ORDER)
+            const request: Constants.OrderMarginRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                product: Constants.ProductTypes.DELIVERY,
+                quantity: 1,
+                price: 1800,
+                variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                old_price: 0,
+                old_quantity: 0,
+                mode: Constants.OrderMarginModes.NEW_ORDER
+            }
+            const res = await api.get_order_margin(request)
             console.log(res)
-            expect(res.available).toBeDefined
-            expect(res.required).toBeDefined
+            expect(res.available_margin).toBeDefined
+            expect(res.required_margin).toBeDefined
+        })
+    })
+
+    describe('basket margin required', ()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.BasketMarginRequest = {
+                orders: [
+                    {
+                        exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                        token: 22,
+                        transaction_type: Constants.TransactionTypes.BUY,
+                        product: Constants.ProductTypes.DELIVERY,
+                        quantity: 1,
+                        price: 1800,
+                        variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                    }
+                ]
+            }
+            const res = await api.get_basket_margin(request)
+            console.log(res)
+            expect(res.initial_margin).toBeDefined
+            expect(res.required_margin).toBeDefined
         })
     })
 
     describe('position conversion',()=>{
         it("is success", async ()=>{
             // expect.assertions(2)
-            const res = await api.convert_position(Constants.ExchangeTypes.NSE_EQUITY,22,Constants.TransactionTypes.BUY,2,Constants.ProductTypes.INTRADAY,Constants.ProductTypes.DELIVERY)
+            const request: Constants.ConvertPositionRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                quantity: 2,
+                old_product: Constants.ProductTypes.INTRADAY,
+                new_product: Constants.ProductTypes.DELIVERY
+            }
+            const res = await api.convert_position(request)
             console.log(res)
             expect(res.code).toBeDefined
             expect(res.message).toBeDefined
@@ -138,8 +304,128 @@ function runtests() {
             // expect.assertions(2)
             const res = await api.order_history("test")
             console.log(res)
-            expect(res.data).toBeDefined
-            expect(res.data[0]).toBeDefined
+            expect(res.orders).toBeDefined
+            expect(res.orders[0]).toBeDefined
         })
     })
+
+    describe('create gtt order',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.PlaceGttOrderRequest = {
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                token: 22,
+                transaction_type: Constants.TransactionTypes.BUY,
+                trigger_price: 1800,
+                quantity: 1,
+                price: 1800,
+                product: Constants.ProductTypes.DELIVERY,
+                gtt_trigger_type: 'single',
+            }
+            const res = await api.place_gtt_order(request)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data.order_id).toBeDefined
+            expect(res.data.order_id).toEqual('99823d7b-fd37-4d75-af7f-f21ec4671852')
+        })
+    })
+
+    describe('gtt orders',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.gtt_orders()
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data[0]).toBeDefined
+            expect(res.data[0].id).toEqual('5a9da19d-400f-47ff-aabd-429a1c98ef26')
+        })
+    })
+
+    describe('cancel gtt order',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.cancel_gtt_order("5a9da19d-400f-47ff-aabd-429a1c98ef26")
+            console.log(res)
+            expect(res.status).toBeDefined
+            expect(res.status).toEqual('success')
+        })
+    })
+
+    describe('quotes should be available',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.quotes(["NSE_EQ-22"],Constants.QuoteModes.FULL)
+            console.log(res)
+            expect(res.status).toBeDefined
+            expect(res.status).toEqual('success')
+            expect(res.data).toBeDefined
+            const keys = Object.keys(res.data)
+            const quote = res.data[keys[0]] as Constants.FullQuoteData
+            expect(quote.last_trade_time).toBeDefined
+            expect(quote.last_trade_time).toEqual(1681122520)
+        })
+    })
+
+    describe('historical data should be available',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.historical_candles(Constants.ExchangeTypes.NSE_EQUITY, 22,to,from,Constants.Resolutions.DAY)
+            console.log(res)
+            expect(res.s).toBeDefined
+        })
+    })
+
+    describe('order modification is success',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.ModifyOrderRequest = {
+                quantity: 2,
+                price: 1800,
+                variety: Constants.VarietyTypes.REGULAR_MARKET_ORDER,
+                traded_quantity: 0,
+                validity: Constants.ValidityTypes.FULL_DAY
+            }
+            const res = await api.modify_order("test",request)
+            console.log(res)
+            expect(res.data).toBeDefined
+            expect(res.data.order_id).toBeDefined
+        })
+    })
+
+    describe('gtt modification is success',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const request: Constants.ModifyGttRequest = {
+                quantity: 2,
+                price: 1800,
+                id: 1
+            }
+            const res = await api.modify_gtt_order("test",request)
+            console.log(res.data?.order_id)
+            expect(res.data).toBeDefined
+            expect(res.data.order_id).toBeDefined
+        })
+    })
+
+    describe('multiple orders cancel is success',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.cancel_multiple_orders(["test1", "test2"])
+            expect(res.data).toBeDefined
+            expect((res.data.length)).toBeGreaterThan(0)
+        })
+    })
+
+    describe('cancel iceberg order is success',()=>{
+        it("is success", async ()=>{
+            // expect.assertions(2)
+            const res = await api.cancel_iceberg_order("test")
+            expect(res.status).toBeDefined
+            expect((res.message)).toBeDefined
+        })
+    })
+}
+
+function constructUrl(templateUrl: string, ...params: string[]): string {
+    return params.reduce((acc, param) => acc.replace('%s', param), templateUrl);
 }

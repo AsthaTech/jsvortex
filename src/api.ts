@@ -139,150 +139,154 @@ export class VortexAPI {
         return false;
     }
 
-    /**
-     * Places an order with the specified parameters.
-     * @param exchange The exchange type for the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param trigger_price The trigger price of the order.
-     * @param disclosed_quantity The disclosed quantity of the order.
-     * @param validity The validity type for the order.
-     * @returns A Promise that resolves to an order response.
-     */
-
     set_access_token(accessToken: string) {
         this.access_token = accessToken
     }
-    async place_order(
-        exchange: Constants.ExchangeTypes,
-        token: number,
-        transaction_type: Constants.TransactionTypes,
-        product: Constants.ProductTypes,
-        variety: Constants.VarietyTypes,
-        quantity: number,
-        price: number,
-        trigger_price: number,
-        disclosed_quantity: number,
-        validity: Constants.ValidityTypes
-    ): Promise<Constants.OrderResponse> {
-        const endpoint = "/orders/regular";
 
-        let validity_days: number;
-        let is_amo: boolean;
-
-        if (validity === Constants.ValidityTypes.FULL_DAY) {
-            validity_days = 1;
-            is_amo = false;
-        } else if (validity === Constants.ValidityTypes.IMMEDIATE_OR_CANCEL) {
-            validity_days = 0;
-            is_amo = false;
-        } else {
-            validity_days = 1;
-            is_amo = true;
+    /**
+    * @param payload PlaceOrderRequest
+    * @returns A Promise that resolves to an order response.
+    */
+    async place_order(payload: Constants.PlaceOrderRequest): Promise<Constants.OrderResponse> {
+        switch (payload.validity) {
+            case Constants.ValidityTypes.FULL_DAY:
+                payload.validity_days = 1;
+                payload.is_amo = false;
+                break;
+            case Constants.ValidityTypes.IMMEDIATE_OR_CANCEL:
+                payload.is_amo = false;
+                payload.validity_days = 0;
+                break;
+            default:
+                payload.validity_days = 1;
+                payload.is_amo = true;
+                break;
         }
+        return this._make_api_request<Constants.OrderResponse>("POST", constructUrl(Constants.URIPlaceOrder, "regular"), payload);
+    }
 
-        const data = {
-            exchange,
-            token,
-            transaction_type,
-            product,
-            variety,
-            quantity,
-            price,
-            trigger_price,
-            disclosed_quantity,
-            validity,
-            validity_days,
-            is_amo,
-        };
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    async place_iceberg_order(payload: Constants.PlaceIcebergOrderRequest): Promise<Constants.PlaceIcebergOrderResponse> {
+        return this._make_api_request<Constants.PlaceIcebergOrderResponse>("POST", constructUrl(Constants.URIPlaceOrder, "iceberg"), payload);
+    }
 
-        return this._make_api_request<Constants.OrderResponse>("POST", endpoint, data);
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    async place_gtt_order(payload: Constants.PlaceGttOrderRequest): Promise<Constants.OrderResponse> {
+        return this._make_api_request<Constants.OrderResponse>("POST", constructUrl(Constants.URIPlaceOrder, "gtt"), payload);
     }
 
     /**
      * Modifies an existing order with the specified parameters.
-     * @param exchange The exchange type of the order.
      * @param order_id The ID of the order to be modified.
-     * @param variety The variety type for the modified order.
-     * @param quantity The quantity of the modified order.
-     * @param traded_quantity The traded quantity of the modified order.
-     * @param price The price of the modified order.
-     * @param trigger_price The trigger price of the modified order.
-     * @param disclosed_quantity The disclosed quantity of the modified order.
-     * @param validity The validity type for the modified order.
+     * @param payload  ModifyOrderRequest
      * @returns A Promise that resolves to an order response.
      */
-    async modify_order(
-        exchange: Constants.ExchangeTypes,
-        order_id: string,
-        variety: Constants.VarietyTypes,
-        quantity: number,
-        traded_quantity: number,
-        price: number,
-        trigger_price: number,
-        disclosed_quantity: number,
-        validity: Constants.ValidityTypes
-    ): Promise<Constants.OrderResponse> {
-        const endpoint = `/orders/regular/${exchange}/${order_id}`;
-
-        let validity_days: number;
-
-        if (validity === Constants.ValidityTypes.FULL_DAY) {
-            validity_days = 1;
-        } else if (validity === Constants.ValidityTypes.IMMEDIATE_OR_CANCEL) {
-            validity_days = 0;
-        } else {
-            validity_days = 1;
-        }
-
-        const data = {
-            variety,
-            quantity,
-            traded_quantity,
-            price,
-            trigger_price,
-            disclosed_quantity,
-            validity,
-            validity_days,
-        };
-
-        return this._make_api_request<Constants.OrderResponse>("PUT", endpoint, data);
+    async modify_order(order_id: string, payload: Constants.ModifyOrderRequest): Promise<Constants.OrderResponse> {
+        return this._make_api_request<Constants.OrderResponse>("PUT", constructUrl(Constants.URIModifyOrder, "regular", order_id), payload);
     }
 
     /**
-    * Cancels an order with the specified exchange and order ID.
-    * @param exchange The exchange type of the order.
+     * Modifies an existing iceberg order with the specified parameters.
+     * @param iceberg_order_id The ID of the order to be modified.
+     * @param payload  ModifyIcebergOrderRequest
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    async modify_iceberg_order(iceberg_order_id: string, payload: Constants.ModifyIcebergOrderRequest): Promise<Constants.IcebergOrderResponse> {
+        return this._make_api_request<Constants.IcebergOrderResponse>("PUT", constructUrl(Constants.URIModifyOrder, "iceberg", iceberg_order_id), payload);
+    }
+
+    /**
+    * Modifies an existing gtt order with the specified parameters.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param payload  ModifyIcebergOrderRequest
+    * @returns A Promise that resolves to an iceberg order response.
+    */
+    async modify_gtt_order(gtt_order_id: string, payload: Constants.ModifyGttRequest): Promise<Constants.GttOrderModificationResponse> {
+        return this._make_api_request<Constants.GttOrderModificationResponse>("PUT", constructUrl(Constants.URIModifyOrder, "gtt", gtt_order_id), payload);
+    }
+
+    /**
+    * Updates tags of an already placed order.
+    * @param order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    async modify_regular_order_tags(order_id: string, tag_ids: number[]): Promise<Constants.ModifyOrderTagsResponse> {
+        return this._make_api_request<Constants.ModifyOrderTagsResponse>("PUT", constructUrl(Constants.URIModifyOrderTags, "regular", order_id), { tag_ids: tag_ids });
+    }
+
+    /**
+    * Updates tags of an already placed order.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    async modify_gtt_order_tags(gtt_order_id: string, tag_ids: number[]): Promise<Constants.ModifyOrderTagsResponse> {
+        return this._make_api_request<Constants.ModifyOrderTagsResponse>("PUT", constructUrl(Constants.URIModifyOrderTags, "gtt", gtt_order_id), { tag_ids: tag_ids });
+    }
+
+    /**
+    * Cancels an order with the specified order ID.
     * @param order_id The ID of the order to be canceled.
     * @returns A Promise that resolves to an order response.
     */
-    async cancel_order(exchange: Constants.ExchangeTypes, order_id: string): Promise<Constants.OrderResponse> {
-        const endpoint = `/orders/regular/${exchange}/${order_id}`;
-        return this._make_api_request<Constants.OrderResponse>("DELETE", endpoint);
+    async cancel_order(order_id: string): Promise<Constants.OrderResponse> {
+        return this._make_api_request<Constants.OrderResponse>("DELETE", constructUrl(Constants.URIModifyOrder, "regular", order_id), null);
     }
 
     /**
-    * Retrieves the order book with the specified limit and offset.
-    * @param limit The maximum number of orders to retrieve.
-    * @param offset The offset value for pagination.
+    * Cancels multiple orders with the specified order IDs.
+    * @param order_ids The IDs of the order to be canceled.
+    * @returns A Promise that resolves to MultipleOrderCancelResponse.
+    */
+    async cancel_multiple_orders(order_ids: string[]): Promise<Constants.MultipleOrderCancelResponse> {
+        return this._make_api_request<Constants.MultipleOrderCancelResponse>("POST", constructUrl(Constants.URIMultiCancelrders, "regular"), { order_ids: order_ids });
+    }
+
+    /**
+    * Cancels iceberg order with the specified order IDs.
+    * @param iceberg_order_id The ID of the iceberg order to be canceled.
+    * @returns A Promise that resolves to IcebergOrderResponse.
+    */
+    async cancel_iceberg_order(iceberg_order_id: string): Promise<Constants.IcebergOrderResponse> {
+        return this._make_api_request<Constants.IcebergOrderResponse>("DELETE", constructUrl(Constants.URIModifyOrder, "iceberg", iceberg_order_id), null);
+    }
+
+    /**
+    * Cancels gtt order with the specified order IDs.
+    * @param gtt_order_id The ID of the gtt order to be canceled.
+    * @returns A Promise that resolves to GttOrderModificationResponse.
+    */
+    async cancel_gtt_order(gtt_order_id: string): Promise<Constants.GttOrderModificationResponse> {
+        return this._make_api_request<Constants.GttOrderModificationResponse>("DELETE", constructUrl(Constants.URIModifyOrder, "gtt", gtt_order_id), null);
+    }
+
+    /**
+    * Retrieves the order book.
     * @returns A Promise that resolves to an order book response.
     */
-    async orders(limit: number, offset: number): Promise<Constants.OrderBookResponse> {
-        const endpoint = `/orders?limit=${limit}&offset=${offset}`
-        return this._make_api_request<Constants.OrderBookResponse>("GET", endpoint);
+    async orders(): Promise<Constants.OrderBookResponse> {
+        return this._make_api_request<Constants.OrderBookResponse>("GET", Constants.URIOrderBook);
+    }
+
+    /**
+    * Retrieves the GTT order book.
+    * @returns A Promise that resolves to a GTT order book response.
+    */
+    async gtt_orders(): Promise<Constants.GttOrderbookResponse> {
+        return this._make_api_request<Constants.GttOrderbookResponse>("GET", Constants.URIGttOrderBook);
     }
 
     /**
      * Retrieves the order history for a specific order.
      * @param order_id The ID of the order to retrieve the history for.
      */
-
-    async order_history(order_id: string) {
-        const endpoint = `/orders/${order_id}`
-        return this._make_api_request<Constants.OrderHistoryResponse>("GET", endpoint);
+    async order_history(order_id: string): Promise<Constants.OrderHistoryResponse> {
+        return this._make_api_request<Constants.OrderHistoryResponse>("GET", constructUrl(Constants.URIOrderHistory, order_id));
     }
 
     /**
@@ -290,82 +294,57 @@ export class VortexAPI {
     * @returns A Promise that resolves to a position response.
     */
     async positions(): Promise<Constants.PositionResponse> {
-        const endpoint = "/portfolio/positions"
-        return this._make_api_request<Constants.PositionResponse>("GET", endpoint);
+        return this._make_api_request<Constants.PositionResponse>("GET", Constants.URIPositions);
     }
-
 
     /**
-   * Converts position's product type .
-   * @returns A Promise that resolves to a convert position's response.
-   */
-    async convert_position(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse> {
-        const endpoint = "/portfolio/positions"
-        var data = {
-            exchange, token, transaction_type, quantity, old_product_type, new_product_type
-        }
-        return this._make_api_request<Constants.ConvertPositionResponse>("PUT", endpoint, data, null);
+    * Converts position's product type .
+    * @returns A Promise that resolves to a convert position's response.
+    */
+    async convert_position(payload: Constants.ConvertPositionRequest): Promise<Constants.ConvertPositionResponse> {
+        return this._make_api_request<Constants.ConvertPositionResponse>("PUT", Constants.URIConvertposition, payload, null);
     }
+
     /**
     * Retrieves the holdings of the user.
     * @returns A Promise that resolves to a holdings response.
     */
-
     async holdings(): Promise<Constants.HoldingsResponse> {
-        const endpoint = "/portfolio/holdings"
-        return this._make_api_request<Constants.HoldingsResponse>("GET", endpoint);
+        return this._make_api_request<Constants.HoldingsResponse>("GET", Constants.URIHoldings);
     }
 
     /**
     * Retrieves the todays's trades of the user.
     * @returns A Promise that resolves to a trades response.
     */
-
-    async trades(limit: number, offset: number): Promise<Constants.TradeBookResponse> {
-        const endpoint = `/trades?limit=${limit}&offset=${offset}`
-        return this._make_api_request<Constants.TradeBookResponse>("GET", endpoint);
+    async trades(): Promise<Constants.TradeBookResponse> {
+        return this._make_api_request<Constants.TradeBookResponse>("GET", Constants.URITrades, null,null);
     }
 
     /**
      * Retrieves the funds of the user.
      * @returns A Promise that resolves to a funds response.
      */
-
     async funds(): Promise<Constants.FundsResponse> {
-        const endpoint = "/user/funds"
-        return this._make_api_request<Constants.FundsResponse>("GET", endpoint);
+        return this._make_api_request<Constants.FundsResponse>("GET", Constants.URIFunds);
     }
 
     /**
      * Calculates the margin requirement for a specific order.
-     * @param exchange The exchange type of the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param mode The margin mode for the calculation.
-     * @param old_quantity The old quantity for partial modification (default: 0).
-     * @param old_price The old price for partial modification (default: 0).
+     * @param payload OrderMarginRequest
      * @returns A Promise that resolves to a margin response.
      */
-    async get_order_margin(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, mode: Constants.OrderMarginModes, old_quantity: number = 0, old_price: number = 0): Promise<Constants.MarginResponse> {
-        const data = {
-            exchange,
-            token,
-            transaction_type,
-            product,
-            variety,
-            quantity,
-            price,
-            old_price,
-            old_quantity,
-            mode
-        };
+    async get_order_margin(payload: Constants.OrderMarginRequest): Promise<Constants.OrderMarginResponse> {
+        return this._make_api_request<Constants.OrderMarginResponse>("POST", Constants.URIOrderMargin, payload);
+    }
 
-        const endpoint = "/margins/order"
-        return this._make_api_request<Constants.MarginResponse>("POST", endpoint, data);
+    /**
+     * Calculates the margin requirement for a specific order.
+     * @param payload OrderMarginRequest
+     * @returns A Promise that resolves to a margin response.
+     */
+    async get_basket_margin(payload: Constants.BasketMarginRequest): Promise<Constants.BasketMarginResponse> {
+        return this._make_api_request<Constants.BasketMarginResponse>("POST", Constants.URIBasketMargin, payload);
     }
 
     /**
@@ -375,9 +354,8 @@ export class VortexAPI {
      * @returns A Promise that resolves to a quote response.
      */
     async quotes(instruments: string[], mode: Constants.QuoteModes): Promise<Constants.QuoteResponse> {
-        const endpoint = "/data/quote"
         const params = { "q": instruments, "mode": mode }
-        return this._make_api_request<Constants.QuoteResponse>("GET", endpoint, null, params);
+        return this._make_api_request<Constants.QuoteResponse>("GET", Constants.URIQuotes, null, params);
     }
 
     /**
@@ -390,12 +368,9 @@ export class VortexAPI {
     * @returns A Promise that resolves to a historical response.
     */
     async historical_candles(exchange: Constants.ExchangeTypes, token: number, to: Date, start: Date, resolution: Constants.Resolutions): Promise<Constants.HistoricalResponse> {
-        const endpoint = "/data/history"
         const params = { "exchange": exchange, "token": token, "to": Math.floor(to.getTime() / 1000), "from": Math.floor(start.getTime() / 1000), "resolution": resolution }
-        return this._make_api_request<Constants.HistoricalResponse>("GET", endpoint, null, params);
+        return this._make_api_request<Constants.HistoricalResponse>("GET", Constants.URIHistory, null, params);
     }
-
-
 
     async download_master(): Promise<Record<string, string>[]> {
         const endpoint = '/data/instruments';
@@ -430,4 +405,8 @@ export class VortexAPI {
         }
     }
 
+}
+
+function constructUrl(templateUrl: string, ...params: string[]): string {
+    return params.reduce((acc, param) => acc.replace('%s', param), templateUrl);
 }
