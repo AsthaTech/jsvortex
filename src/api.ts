@@ -20,7 +20,7 @@ export class VortexAPI {
      * @param base_url The base URL of the Vortex API (default: "https://vortex.restapi.asthatrade.com").
      * @param enable_logging Determines whether logging is enabled (default: false).
      */
-    constructor(api_key: string, application_id: string, base_url: string = "https://vortex.restapi.asthatrade.com", enable_logging: boolean = false) {
+    constructor(api_key: string, application_id: string, base_url: string = "https://vortex-api.rupeezy.in/v2", enable_logging: boolean = false) {
         this.api_key = api_key;
         this.application_id = application_id;
         this.base_url = base_url;
@@ -371,6 +371,46 @@ export class VortexAPI {
         return this._make_api_request<Constants.HistoricalResponse>("GET", Constants.URIHistory, null, params);
     }
 
+    /**
+     * Retieves the user's saved order tags 
+     * @returns A Promise that resolves to tags response.
+     * */
+    async get_tags(): Promise<Constants.TagsResponse> {
+        return this._make_api_request<Constants.TagsResponse>("GET", Constants.URITags);
+    }  
+    
+    /**
+     * Modifies an existing tag with the specified parameters.
+     * @param payload TagRequest
+     * @returns A Promise that resolves to a tag response.
+     */
+    async modify_tag(tag_id: number, payload: Constants.TagModificationRequest): Promise<Constants.TagResponse> {
+        return this._make_api_request<Constants.TagResponse>("PUT", constructUrl(Constants.URITag, tag_id.toString()));
+    }  
+
+     /**
+     * Deletes an existing tag.
+     * @param payload TagRequest
+     * @returns A Promise that resolves to a tag response.
+     */
+     async delete_tag(tag_id: number, payload: Constants.TagModificationRequest): Promise<Constants.TagResponse> {
+        return this._make_api_request<Constants.TagResponse>("PUT", constructUrl(Constants.URITag, tag_id.toString()));
+    }  
+
+    async withdraw_funds(payload: Constants.FundWithdrawalRequest): Promise<Constants.FundWithdrawalResponse> {
+        return this._make_api_request<Constants.FundWithdrawalResponse>("POST", Constants.URIWithdrawal, payload);
+    }
+    async list_withdrawals(): Promise<Constants.FundWithdrawalResponse> {
+        return this._make_api_request<Constants.FundWithdrawalResponse>("GET", Constants.URIWithdrawal);
+    }
+
+    async cancel_withdrawal(payload: Constants.CancelFundWithdrawalRequest): Promise<Constants.CancelFundWithdrawalResponse> {
+        return this._make_api_request<Constants.CancelFundWithdrawalResponse>("PUT", Constants.URIWithdrawal,payload);
+    }
+
+    async option_chain(payload: Constants.OptionChainRequest): Promise<Constants.OptionChainResponse> {
+        return this._make_api_request<Constants.OptionChainResponse>("POST", Constants.URIOptionChain, payload);
+    }
     async download_master(): Promise<Record<string, string>[]> {
         const endpoint = '/data/instruments';
         const bearer_token = `Bearer ${this.access_token}`;

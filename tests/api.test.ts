@@ -114,6 +114,24 @@ function runtests() {
         .delete(constructUrl(Constants.URIModifyOrder, "iceberg", "test"))
         .reply(200, parseJson("iceberg_orders/delete.json"))
 
+        .get(Constants.URITags)
+        .reply(200, parseJson("reports/tags/list.json"))
+
+        .put(constructUrl(Constants.URITag, "1"))
+        .reply(200, parseJson("reports/tags/update.json"))
+
+        .get(Constants.URIWithdrawal)
+        .reply(200, parseJson("fund_withdrawal/list_withdrawals.json"))
+
+        .post(Constants.URIWithdrawal)
+        .reply(200, parseJson("fund_withdrawal/create_withdrawal.json"))
+
+        .put(Constants.URIWithdrawal)
+        .reply(200, parseJson("fund_withdrawal/cancel_withdrawal.json"))
+
+        .post(Constants.URIOptionChain)
+        .reply(200, parseJson("strategies/option_chain.json"))
+
     describe('login', () => {
         it("is success", async () => {
             // expect.assertions(2)
@@ -487,6 +505,74 @@ function runtests() {
             const res = await api.modify_gtt_order_tags("test", [1,2])
             expect(res.message).toBeDefined
             expect(res.status).toBeDefined
+        })
+    })
+
+    describe("get tags",()=>{
+        it("is success", async () => {
+            const res = await api.get_tags()
+            expect(res.data).toBeDefined
+            expect(res.data[0]).toBeDefined
+            expect(res.data[0].created_at).toBeDefined
+        })
+    })
+
+    describe("modify tags",()=>{
+        it("is success", async () => {
+            const request: Constants.TagModificationRequest = {
+                name: "test",
+                description: "test"
+            }
+            const res = await api.modify_tag(1,request)
+            expect(res.data).toBeDefined
+            expect(res.data.id).toBeDefined
+        })
+    })
+
+    describe("list withdrawals",()=>{
+        it("is success", async () => {
+            const res = await api.list_withdrawals()
+            expect(res.data).toBeDefined
+            expect(res.data.transaction_id).toBeDefined
+        })
+    })
+    describe("create withdrawal",()=>{
+        it("is success", async () => {
+            const request: Constants.FundWithdrawalRequest = {
+                bank_account_number: "test",
+                ifsc: "test",
+                amount: 123,
+                exchange: Constants.ExchangeTypes.NSE_EQUITY
+            }
+            const res = await api.withdraw_funds(request)
+            expect(res.transaction_id).toBeDefined
+        })
+    })
+
+    describe("cancel withdrawal",()=>{
+        it("is success", async () => {
+            const request: Constants.CancelFundWithdrawalRequest = {
+                transaction_id: "test",
+                amount: 123,
+                exchange: Constants.ExchangeTypes.NSE_EQUITY
+            }
+            const res = await api.cancel_withdrawal(request)
+            expect(res.status).toEqual("success")
+        })
+    })
+
+    describe("option chain",()=>{
+        it("is success", async () => {
+            const request: Constants.OptionChainRequest = {
+                symbol: "NIFTY",
+                token: 26000,
+                exchange: Constants.ExchangeTypes.NSE_EQUITY,
+                expiry_date: "20240201",
+                greeks: true
+            }
+            const res = await api.option_chain(request)
+            expect(res.response).toBeDefined
+            expect(res.response.expiry_dates.length).toBeGreaterThan(0)
         })
     })
 }

@@ -140,7 +140,7 @@ interface GttOrderResponseOrders {
     trigger_price: number;
     quantity: number;
     status: GttOrderStatus;
-    created_at: Date;
+    created_at: string;
     updated_at: Date;
     trigerred_at: Date;
 }
@@ -603,6 +603,33 @@ export interface FundWithdrawalRequest {
     exchange: ExchangeTypes;
 }
 
+export interface CancelFundWithdrawalRequest {
+    // Required: Transaction Id.
+    transaction_id: string;
+    // Required: Amount to withdraw.
+    amount: number;
+    // Required: Exchange type.
+    exchange: ExchangeTypes;
+}
+
+
+export interface FundWithdrawalResponse {
+   status: string;
+   message: string;
+   transaction_id: string;
+    data: {
+        transaction_id: string;
+        amount: number; 
+        created_at: string;
+        status: string; 
+        exchange: ExchangeTypes;
+    }
+}
+
+export interface CancelFundWithdrawalResponse {
+    status: string;
+ }
+
 export interface FundWithdrawalCancelRequest {
     // Required: Transaction ID.
     transaction_id: string;
@@ -757,6 +784,83 @@ export interface ModifyOrderRequest {
     tag_ids?: number[];
 }
 
+export interface TagModificationRequest{
+    name: string;
+    description: string;
+}
+
+export interface TagsResponse {
+    status: string;
+    data: TagData[];
+}
+
+export interface TagData {
+    id: number;
+    client_code: string;
+    name: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface TagResponse {
+    status: string;
+    data: TagData;
+}
+
+export interface TagDeleteResponse {
+    status: string;
+    message: string;
+}
+
+export interface OptionChainRequest{
+    symbol: string;
+    exchange: ExchangeTypes;
+    token : number;
+    expiry_date: string;
+    greeks: boolean;
+}
+
+export interface OptionChainResponse{
+    status : string;
+    message: string;
+    response : OptionChainData;
+}
+
+export interface OptionChainData{
+    symbol: string;
+    has_parent_stock: boolean;
+    expiry_date: string;
+    expiry_dates: string[];
+    options: OptionChainOptions
+}
+
+export interface OptionChainOptions{
+    exchange: ExchangeTypes;
+    List : OptionChainOption[];
+}
+
+export interface OptionChainOption{
+    strike_price: number;
+    iv: number;
+    vegas: number;
+    gamma: number;
+    CE: OptionDetail; 
+    PE: OptionDetail;
+}
+
+export interface OptionDetail{
+    token: number;
+    instrument_name: InstrumentName;
+    lot_size : number;
+    security_description: string;
+    eligibility: number;
+    ltp: number;
+    open_interest: number;
+    day_first_tick_oi: number;
+    volume: number;
+    delta: number;
+}
 
 export const URILogin: string = "/user/login";
 export const URISession: string = "/user/session";
@@ -792,4 +896,4 @@ export const URITurnoverDetailsReport: string = "/reports/turnover/details/%s?fr
 export const URIPnLReport: string = "/reports/pnl/%s?from_date=%s&to_date=%s";
 export const URIMTFInterestReport: string = "/reports/mtf_interest/%s?from_date=%s&to_date=%s";
 export const URITags: string = "/reports/tags";
-export const URITag: string = "/reports/tags/%d";
+export const URITag: string = "/reports/tags/%s";
