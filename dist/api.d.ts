@@ -6,7 +6,7 @@ export declare class VortexAPI {
     private api_key;
     private application_id;
     base_url: string;
-    private access_token;
+    access_token: string | null;
     private enable_logging;
     /**
      * Creates an instance of the VortexAPI class.
@@ -27,50 +27,89 @@ export declare class VortexAPI {
     */
     login(client_code: string, password: string, totp: string): Promise<Constants.LoginResponse>;
     private _setup_client_code;
-    /**
-     * Places an order with the specified parameters.
-     * @param exchange The exchange type for the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param trigger_price The trigger price of the order.
-     * @param disclosed_quantity The disclosed quantity of the order.
-     * @param validity The validity type for the order.
-     * @returns A Promise that resolves to an order response.
-     */
     set_access_token(accessToken: string): void;
-    place_order(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
+    /**
+    * @param payload PlaceOrderRequest
+    * @returns A Promise that resolves to an order response.
+    */
+    place_order(payload: Constants.PlaceOrderRequest): Promise<Constants.OrderResponse>;
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    place_iceberg_order(payload: Constants.PlaceIcebergOrderRequest): Promise<Constants.PlaceIcebergOrderResponse>;
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    place_gtt_order(payload: Constants.PlaceGttOrderRequest): Promise<Constants.OrderResponse>;
     /**
      * Modifies an existing order with the specified parameters.
-     * @param exchange The exchange type of the order.
      * @param order_id The ID of the order to be modified.
-     * @param variety The variety type for the modified order.
-     * @param quantity The quantity of the modified order.
-     * @param traded_quantity The traded quantity of the modified order.
-     * @param price The price of the modified order.
-     * @param trigger_price The trigger price of the modified order.
-     * @param disclosed_quantity The disclosed quantity of the modified order.
-     * @param validity The validity type for the modified order.
+     * @param payload  ModifyOrderRequest
      * @returns A Promise that resolves to an order response.
      */
-    modify_order(exchange: Constants.ExchangeTypes, order_id: string, variety: Constants.VarietyTypes, quantity: number, traded_quantity: number, price: number, trigger_price: number, disclosed_quantity: number, validity: Constants.ValidityTypes): Promise<Constants.OrderResponse>;
+    modify_order(order_id: string, payload: Constants.ModifyOrderRequest): Promise<Constants.OrderResponse>;
     /**
-    * Cancels an order with the specified exchange and order ID.
-    * @param exchange The exchange type of the order.
+     * Modifies an existing iceberg order with the specified parameters.
+     * @param iceberg_order_id The ID of the order to be modified.
+     * @param payload  ModifyIcebergOrderRequest
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    modify_iceberg_order(iceberg_order_id: string, payload: Constants.ModifyIcebergOrderRequest): Promise<Constants.IcebergOrderResponse>;
+    /**
+    * Modifies an existing gtt order with the specified parameters.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param payload  ModifyIcebergOrderRequest
+    * @returns A Promise that resolves to an iceberg order response.
+    */
+    modify_gtt_order(gtt_order_id: string, payload: Constants.ModifyGttRequest): Promise<Constants.GttOrderModificationResponse>;
+    /**
+    * Updates tags of an already placed order.
+    * @param order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    modify_regular_order_tags(order_id: string, tag_ids: number[]): Promise<Constants.ModifyOrderTagsResponse>;
+    /**
+    * Updates tags of an already placed order.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    modify_gtt_order_tags(gtt_order_id: string, tag_ids: number[]): Promise<Constants.ModifyOrderTagsResponse>;
+    /**
+    * Cancels an order with the specified order ID.
     * @param order_id The ID of the order to be canceled.
     * @returns A Promise that resolves to an order response.
     */
-    cancel_order(exchange: Constants.ExchangeTypes, order_id: string): Promise<Constants.OrderResponse>;
+    cancel_order(order_id: string): Promise<Constants.OrderResponse>;
     /**
-    * Retrieves the order book with the specified limit and offset.
-    * @param limit The maximum number of orders to retrieve.
-    * @param offset The offset value for pagination.
+    * Cancels multiple orders with the specified order IDs.
+    * @param order_ids The IDs of the order to be canceled.
+    * @returns A Promise that resolves to MultipleOrderCancelResponse.
+    */
+    cancel_multiple_orders(order_ids: string[]): Promise<Constants.MultipleOrderCancelResponse>;
+    /**
+    * Cancels iceberg order with the specified order IDs.
+    * @param iceberg_order_id The ID of the iceberg order to be canceled.
+    * @returns A Promise that resolves to IcebergOrderResponse.
+    */
+    cancel_iceberg_order(iceberg_order_id: string): Promise<Constants.IcebergOrderResponse>;
+    /**
+    * Cancels gtt order with the specified order IDs.
+    * @param gtt_order_id The ID of the gtt order to be canceled.
+    * @returns A Promise that resolves to GttOrderModificationResponse.
+    */
+    cancel_gtt_order(gtt_order_id: string): Promise<Constants.GttOrderModificationResponse>;
+    /**
+    * Retrieves the order book.
     * @returns A Promise that resolves to an order book response.
     */
-    orders(limit: number, offset: number): Promise<Constants.OrderBookResponse>;
+    orders(): Promise<Constants.OrderBookResponse>;
+    /**
+    * Retrieves the GTT order book.
+    * @returns A Promise that resolves to a GTT order book response.
+    */
+    gtt_orders(): Promise<Constants.GttOrderbookResponse>;
     /**
      * Retrieves the order history for a specific order.
      * @param order_id The ID of the order to retrieve the history for.
@@ -82,10 +121,10 @@ export declare class VortexAPI {
     */
     positions(): Promise<Constants.PositionResponse>;
     /**
-   * Converts position's product type .
-   * @returns A Promise that resolves to a convert position's response.
-   */
-    convert_position(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, quantity: number, old_product_type: Constants.ProductTypes, new_product_type: Constants.ProductTypes): Promise<Constants.ConvertPositionResponse>;
+    * Converts position's product type .
+    * @returns A Promise that resolves to a convert position's response.
+    */
+    convert_position(payload: Constants.ConvertPositionRequest): Promise<Constants.ConvertPositionResponse>;
     /**
     * Retrieves the holdings of the user.
     * @returns A Promise that resolves to a holdings response.
@@ -95,7 +134,7 @@ export declare class VortexAPI {
     * Retrieves the todays's trades of the user.
     * @returns A Promise that resolves to a trades response.
     */
-    trades(limit: number, offset: number): Promise<Constants.TradeBookResponse>;
+    trades(): Promise<Constants.TradeBookResponse>;
     /**
      * Retrieves the funds of the user.
      * @returns A Promise that resolves to a funds response.
@@ -103,19 +142,16 @@ export declare class VortexAPI {
     funds(): Promise<Constants.FundsResponse>;
     /**
      * Calculates the margin requirement for a specific order.
-     * @param exchange The exchange type of the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param mode The margin mode for the calculation.
-     * @param old_quantity The old quantity for partial modification (default: 0).
-     * @param old_price The old price for partial modification (default: 0).
+     * @param payload OrderMarginRequest
      * @returns A Promise that resolves to a margin response.
      */
-    get_order_margin(exchange: Constants.ExchangeTypes, token: number, transaction_type: Constants.TransactionTypes, product: Constants.ProductTypes, variety: Constants.VarietyTypes, quantity: number, price: number, mode: Constants.OrderMarginModes, old_quantity?: number, old_price?: number): Promise<Constants.MarginResponse>;
+    get_order_margin(payload: Constants.OrderMarginRequest): Promise<Constants.OrderMarginResponse>;
+    /**
+     * Calculates the margin requirement for a specific order.
+     * @param payload OrderMarginRequest
+     * @returns A Promise that resolves to a margin response.
+     */
+    get_basket_margin(payload: Constants.BasketMarginRequest): Promise<Constants.BasketMarginResponse>;
     /**
      * Retrieves quotes for the specified instruments.
      * @param instruments The list of instruments to retrieve quotes for.
@@ -133,5 +169,26 @@ export declare class VortexAPI {
     * @returns A Promise that resolves to a historical response.
     */
     historical_candles(exchange: Constants.ExchangeTypes, token: number, to: Date, start: Date, resolution: Constants.Resolutions): Promise<Constants.HistoricalResponse>;
+    /**
+     * Retieves the user's saved order tags
+     * @returns A Promise that resolves to tags response.
+     * */
+    get_tags(): Promise<Constants.TagsResponse>;
+    /**
+     * Modifies an existing tag with the specified parameters.
+     * @param payload TagRequest
+     * @returns A Promise that resolves to a tag response.
+     */
+    modify_tag(tag_id: number, payload: Constants.TagModificationRequest): Promise<Constants.TagResponse>;
+    /**
+    * Deletes an existing tag.
+    * @param payload TagRequest
+    * @returns A Promise that resolves to a tag response.
+    */
+    delete_tag(tag_id: number, payload: Constants.TagModificationRequest): Promise<Constants.TagResponse>;
+    withdraw_funds(payload: Constants.FundWithdrawalRequest): Promise<Constants.FundWithdrawalResponse>;
+    list_withdrawals(): Promise<Constants.FundWithdrawalResponse>;
+    cancel_withdrawal(payload: Constants.CancelFundWithdrawalRequest): Promise<Constants.CancelFundWithdrawalResponse>;
+    option_chain(payload: Constants.OptionChainRequest): Promise<Constants.OptionChainResponse>;
     download_master(): Promise<Record<string, string>[]>;
 }

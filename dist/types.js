@@ -1,6 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderMarginModes = exports.ValidityTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = void 0;
+exports.URITag = exports.URITags = exports.URIMTFInterestReport = exports.URIPnLReport = exports.URITurnoverDetailsReport = exports.URITurnoverSummaryReport = exports.URITradeReport = exports.URIPayoffStrategies = exports.URIBuildStrategies = exports.URIStrategies = exports.URIOptionChain = exports.URIHistory = exports.URIQuotes = exports.URIBasketMargin = exports.URIOrderMargin = exports.URIWithdrawal = exports.URIBrokerage = exports.URIBanks = exports.URIFunds = exports.URIHoldings = exports.URIConvertposition = exports.URIPositions = exports.URITrades = exports.URIOrderHistory = exports.URIMultiCancelrders = exports.URIOrderBook = exports.URIGttOrderBook = exports.URIDeleteMultipleOrder = exports.URIDeleteOrder = exports.URIModifyOrderTags = exports.URIModifyOrder = exports.URIPlaceOrder = exports.URIInstruments = exports.URISession = exports.URILogin = exports.OrderMarginModes = exports.ValidityTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = exports.OptionType = exports.GttOrderStatus = exports.InstrumentName = void 0;
+var InstrumentName;
+(function (InstrumentName) {
+    InstrumentName["EQIDX"] = "EQIDX";
+    InstrumentName["COM"] = "COM";
+    InstrumentName["EQUITIES"] = "EQUITIES";
+    InstrumentName["FUTCOM"] = "FUTCOM";
+    InstrumentName["FUTCUR"] = "FUTCUR";
+    InstrumentName["FUTIDX"] = "FUTIDX";
+    InstrumentName["FUTIRC"] = "FUTIRC";
+    InstrumentName["FUTIRT"] = "FUTIRT";
+    InstrumentName["FUTSTK"] = "FUTSTK";
+    InstrumentName["OPTCUR"] = "OPTCUR";
+    InstrumentName["OPTFUT"] = "OPTFUT";
+    InstrumentName["OPTIDX"] = "OPTIDX";
+    InstrumentName["OPTIRC"] = "OPTIRC";
+    InstrumentName["OPTSTK"] = "OPTSTK";
+    InstrumentName["UNDCUR"] = "UNDCUR";
+})(InstrumentName || (exports.InstrumentName = InstrumentName = {}));
+var GttOrderStatus;
+(function (GttOrderStatus) {
+    GttOrderStatus["Triggered"] = "triggered";
+    GttOrderStatus["Active"] = "active";
+    GttOrderStatus["Cancelled"] = "cancelled";
+    GttOrderStatus["Expired"] = "expired";
+    GttOrderStatus["Completed"] = "completed";
+})(GttOrderStatus || (exports.GttOrderStatus = GttOrderStatus = {}));
+var OptionType;
+(function (OptionType) {
+    OptionType["Call"] = "CE";
+    OptionType["Put"] = "PE";
+})(OptionType || (exports.OptionType = OptionType = {}));
 var Resolutions;
 (function (Resolutions) {
     Resolutions["MIN_1"] = "1";
@@ -62,3 +93,38 @@ var OrderMarginModes;
     OrderMarginModes["NEW_ORDER"] = "NEW";
     OrderMarginModes["MODIFY_ORDER"] = "MODIFY";
 })(OrderMarginModes || (exports.OrderMarginModes = OrderMarginModes = {}));
+exports.URILogin = "/user/login";
+exports.URISession = "/user/session";
+exports.URIInstruments = "/data/instruments";
+exports.URIPlaceOrder = "/trading/orders/%s"; // "/trading/orders/regular"
+exports.URIModifyOrder = "/trading/orders/%s/%s"; // "/trading/orders/{{order_type}}/{order_id}"
+exports.URIModifyOrderTags = "/trading/orders/%s/%s/tags"; // "/trading/orders/{{order_type}}/{order_id}/tags"
+exports.URIDeleteOrder = "/trading/orders/%s/%s"; // "/trading/orders/{{order_type}}/{order_id}"
+exports.URIDeleteMultipleOrder = "/trading/orders/%s/multi_delete"; // "/trading/orders/{{order_type}}/{order_id}"
+exports.URIGttOrderBook = "/trading/orders/gtt"; // "/trading/orders/gtt"
+exports.URIOrderBook = "/trading/orders"; // "/trading/orders"
+exports.URIMultiCancelrders = "/trading/orders/regular/multi_delete"; // "/trading/orders/regular/multi_delete"
+exports.URIOrderHistory = "/trading/orders/%s"; // "/trading/orders/{order_id}"
+exports.URITrades = "/trading/trades";
+exports.URIPositions = "/trading/portfolio/positions";
+exports.URIConvertposition = "/trading/portfolio/positions";
+exports.URIHoldings = "/trading/portfolio/holdings";
+exports.URIFunds = "/user/funds";
+exports.URIBanks = "/user/profile/banks";
+exports.URIBrokerage = "/user/profile/brokerage";
+exports.URIWithdrawal = "/user/funds/withdrawal";
+exports.URIOrderMargin = "/margins/order";
+exports.URIBasketMargin = "/margins/basket";
+exports.URIQuotes = "/data/quote";
+exports.URIHistory = "/data/history";
+exports.URIOptionChain = "/strategies/option_chain";
+exports.URIStrategies = "/strategies";
+exports.URIBuildStrategies = "/strategies/build";
+exports.URIPayoffStrategies = "/strategies/payoff";
+exports.URITradeReport = "/reports/trades/%s?from_date=%s&to_date=%s";
+exports.URITurnoverSummaryReport = "/reports/turnover/summary/%s?from_date=%s&to_date=%s";
+exports.URITurnoverDetailsReport = "/reports/turnover/details/%s?from_date=%s&to_date=%s";
+exports.URIPnLReport = "/reports/pnl/%s?from_date=%s&to_date=%s";
+exports.URIMTFInterestReport = "/reports/mtf_interest/%s?from_date=%s&to_date=%s";
+exports.URITags = "/reports/tags";
+exports.URITag = "/reports/tags/%s";

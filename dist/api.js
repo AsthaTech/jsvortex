@@ -50,7 +50,7 @@ class VortexAPI {
      * @param base_url The base URL of the Vortex API (default: "https://vortex.restapi.asthatrade.com").
      * @param enable_logging Determines whether logging is enabled (default: false).
      */
-    constructor(api_key, application_id, base_url = "https://vortex.restapi.asthatrade.com", enable_logging = false) {
+    constructor(api_key, application_id, base_url = "https://vortex-api.rupeezy.in/v2", enable_logging = false) {
         this.api_key = api_key;
         this.application_id = application_id;
         this.base_url = base_url;
@@ -143,14 +143,13 @@ class VortexAPI {
     */
     login(client_code, password, totp) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/user/login";
             const data = {
                 client_code: client_code,
                 password: password,
                 totp: totp,
                 application_id: this.application_id,
             };
-            return this._make_unauth_request("POST", endpoint, data)
+            return this._make_unauth_request("POST", Constants.URILogin, data)
                 .then((res) => {
                 this._setup_client_code(res);
                 // Call _setup_client_code method here if needed
@@ -167,118 +166,159 @@ class VortexAPI {
         }
         return false;
     }
-    /**
-     * Places an order with the specified parameters.
-     * @param exchange The exchange type for the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param trigger_price The trigger price of the order.
-     * @param disclosed_quantity The disclosed quantity of the order.
-     * @param validity The validity type for the order.
-     * @returns A Promise that resolves to an order response.
-     */
     set_access_token(accessToken) {
         this.access_token = accessToken;
     }
-    place_order(exchange, token, transaction_type, product, variety, quantity, price, trigger_price, disclosed_quantity, validity) {
+    /**
+    * @param payload PlaceOrderRequest
+    * @returns A Promise that resolves to an order response.
+    */
+    place_order(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/orders/regular";
-            let validity_days;
-            let is_amo;
-            if (validity === Constants.ValidityTypes.FULL_DAY) {
-                validity_days = 1;
-                is_amo = false;
+            switch (payload.validity) {
+                case Constants.ValidityTypes.FULL_DAY:
+                    payload.validity_days = 1;
+                    payload.is_amo = false;
+                    break;
+                case Constants.ValidityTypes.IMMEDIATE_OR_CANCEL:
+                    payload.is_amo = false;
+                    payload.validity_days = 0;
+                    break;
+                default:
+                    payload.validity_days = 1;
+                    payload.is_amo = true;
+                    break;
             }
-            else if (validity === Constants.ValidityTypes.IMMEDIATE_OR_CANCEL) {
-                validity_days = 0;
-                is_amo = false;
-            }
-            else {
-                validity_days = 1;
-                is_amo = true;
-            }
-            const data = {
-                exchange,
-                token,
-                transaction_type,
-                product,
-                variety,
-                quantity,
-                price,
-                trigger_price,
-                disclosed_quantity,
-                validity,
-                validity_days,
-                is_amo,
-            };
-            return this._make_api_request("POST", endpoint, data);
+            return this._make_api_request("POST", constructUrl(Constants.URIPlaceOrder, "regular"), payload);
+        });
+    }
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    place_iceberg_order(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", constructUrl(Constants.URIPlaceOrder, "iceberg"), payload);
+        });
+    }
+    /**
+     * @param payload
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    place_gtt_order(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", constructUrl(Constants.URIPlaceOrder, "gtt"), payload);
         });
     }
     /**
      * Modifies an existing order with the specified parameters.
-     * @param exchange The exchange type of the order.
      * @param order_id The ID of the order to be modified.
-     * @param variety The variety type for the modified order.
-     * @param quantity The quantity of the modified order.
-     * @param traded_quantity The traded quantity of the modified order.
-     * @param price The price of the modified order.
-     * @param trigger_price The trigger price of the modified order.
-     * @param disclosed_quantity The disclosed quantity of the modified order.
-     * @param validity The validity type for the modified order.
+     * @param payload  ModifyOrderRequest
      * @returns A Promise that resolves to an order response.
      */
-    modify_order(exchange, order_id, variety, quantity, traded_quantity, price, trigger_price, disclosed_quantity, validity) {
+    modify_order(order_id, payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = `/orders/regular/${exchange}/${order_id}`;
-            let validity_days;
-            if (validity === Constants.ValidityTypes.FULL_DAY) {
-                validity_days = 1;
-            }
-            else if (validity === Constants.ValidityTypes.IMMEDIATE_OR_CANCEL) {
-                validity_days = 0;
-            }
-            else {
-                validity_days = 1;
-            }
-            const data = {
-                variety,
-                quantity,
-                traded_quantity,
-                price,
-                trigger_price,
-                disclosed_quantity,
-                validity,
-                validity_days,
-            };
-            return this._make_api_request("PUT", endpoint, data);
+            return this._make_api_request("PUT", constructUrl(Constants.URIModifyOrder, "regular", order_id), payload);
         });
     }
     /**
-    * Cancels an order with the specified exchange and order ID.
-    * @param exchange The exchange type of the order.
+     * Modifies an existing iceberg order with the specified parameters.
+     * @param iceberg_order_id The ID of the order to be modified.
+     * @param payload  ModifyIcebergOrderRequest
+     * @returns A Promise that resolves to an iceberg order response.
+     */
+    modify_iceberg_order(iceberg_order_id, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URIModifyOrder, "iceberg", iceberg_order_id), payload);
+        });
+    }
+    /**
+    * Modifies an existing gtt order with the specified parameters.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param payload  ModifyIcebergOrderRequest
+    * @returns A Promise that resolves to an iceberg order response.
+    */
+    modify_gtt_order(gtt_order_id, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URIModifyOrder, "gtt", gtt_order_id), payload);
+        });
+    }
+    /**
+    * Updates tags of an already placed order.
+    * @param order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    modify_regular_order_tags(order_id, tag_ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URIModifyOrderTags, "regular", order_id), { tag_ids: tag_ids });
+        });
+    }
+    /**
+    * Updates tags of an already placed order.
+    * @param gtt_order_id The ID of the order to be modified.
+    * @param tag_ids List of tag ids to add to any order
+    */
+    modify_gtt_order_tags(gtt_order_id, tag_ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URIModifyOrderTags, "gtt", gtt_order_id), { tag_ids: tag_ids });
+        });
+    }
+    /**
+    * Cancels an order with the specified order ID.
     * @param order_id The ID of the order to be canceled.
     * @returns A Promise that resolves to an order response.
     */
-    cancel_order(exchange, order_id) {
+    cancel_order(order_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = `/orders/regular/${exchange}/${order_id}`;
-            return this._make_api_request("DELETE", endpoint);
+            return this._make_api_request("DELETE", constructUrl(Constants.URIModifyOrder, "regular", order_id), null);
         });
     }
     /**
-    * Retrieves the order book with the specified limit and offset.
-    * @param limit The maximum number of orders to retrieve.
-    * @param offset The offset value for pagination.
+    * Cancels multiple orders with the specified order IDs.
+    * @param order_ids The IDs of the order to be canceled.
+    * @returns A Promise that resolves to MultipleOrderCancelResponse.
+    */
+    cancel_multiple_orders(order_ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", constructUrl(Constants.URIMultiCancelrders, "regular"), { order_ids: order_ids });
+        });
+    }
+    /**
+    * Cancels iceberg order with the specified order IDs.
+    * @param iceberg_order_id The ID of the iceberg order to be canceled.
+    * @returns A Promise that resolves to IcebergOrderResponse.
+    */
+    cancel_iceberg_order(iceberg_order_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("DELETE", constructUrl(Constants.URIModifyOrder, "iceberg", iceberg_order_id), null);
+        });
+    }
+    /**
+    * Cancels gtt order with the specified order IDs.
+    * @param gtt_order_id The ID of the gtt order to be canceled.
+    * @returns A Promise that resolves to GttOrderModificationResponse.
+    */
+    cancel_gtt_order(gtt_order_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("DELETE", constructUrl(Constants.URIModifyOrder, "gtt", gtt_order_id), null);
+        });
+    }
+    /**
+    * Retrieves the order book.
     * @returns A Promise that resolves to an order book response.
     */
-    orders(limit, offset) {
+    orders() {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = `/orders?limit=${limit}&offset=${offset}`;
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", Constants.URIOrderBook);
+        });
+    }
+    /**
+    * Retrieves the GTT order book.
+    * @returns A Promise that resolves to a GTT order book response.
+    */
+    gtt_orders() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("GET", Constants.URIGttOrderBook);
         });
     }
     /**
@@ -287,8 +327,7 @@ class VortexAPI {
      */
     order_history(order_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = `/orders/${order_id}`;
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", constructUrl(Constants.URIOrderHistory, order_id));
         });
     }
     /**
@@ -297,21 +336,16 @@ class VortexAPI {
     */
     positions() {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/portfolio/positions";
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", Constants.URIPositions);
         });
     }
     /**
-   * Converts position's product type .
-   * @returns A Promise that resolves to a convert position's response.
-   */
-    convert_position(exchange, token, transaction_type, quantity, old_product_type, new_product_type) {
+    * Converts position's product type .
+    * @returns A Promise that resolves to a convert position's response.
+    */
+    convert_position(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/portfolio/positions";
-            var data = {
-                exchange, token, transaction_type, quantity, old_product_type, new_product_type
-            };
-            return this._make_api_request("PUT", endpoint, data, null);
+            return this._make_api_request("PUT", Constants.URIConvertposition, payload, null);
         });
     }
     /**
@@ -320,18 +354,16 @@ class VortexAPI {
     */
     holdings() {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/portfolio/holdings";
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", Constants.URIHoldings);
         });
     }
     /**
     * Retrieves the todays's trades of the user.
     * @returns A Promise that resolves to a trades response.
     */
-    trades(limit, offset) {
+    trades() {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = `/trades?limit=${limit}&offset=${offset}`;
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", Constants.URITrades, null, null);
         });
     }
     /**
@@ -340,40 +372,27 @@ class VortexAPI {
      */
     funds() {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/user/funds";
-            return this._make_api_request("GET", endpoint);
+            return this._make_api_request("GET", Constants.URIFunds);
         });
     }
     /**
      * Calculates the margin requirement for a specific order.
-     * @param exchange The exchange type of the order.
-     * @param token The token value for the order.
-     * @param transaction_type The transaction type for the order.
-     * @param product The product type for the order.
-     * @param variety The variety type for the order.
-     * @param quantity The quantity of the order.
-     * @param price The price of the order.
-     * @param mode The margin mode for the calculation.
-     * @param old_quantity The old quantity for partial modification (default: 0).
-     * @param old_price The old price for partial modification (default: 0).
+     * @param payload OrderMarginRequest
      * @returns A Promise that resolves to a margin response.
      */
-    get_order_margin(exchange, token, transaction_type, product, variety, quantity, price, mode, old_quantity = 0, old_price = 0) {
+    get_order_margin(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            const data = {
-                exchange,
-                token,
-                transaction_type,
-                product,
-                variety,
-                quantity,
-                price,
-                old_price,
-                old_quantity,
-                mode
-            };
-            const endpoint = "/margins/order";
-            return this._make_api_request("POST", endpoint, data);
+            return this._make_api_request("POST", Constants.URIOrderMargin, payload);
+        });
+    }
+    /**
+     * Calculates the margin requirement for a specific order.
+     * @param payload OrderMarginRequest
+     * @returns A Promise that resolves to a margin response.
+     */
+    get_basket_margin(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", Constants.URIBasketMargin, payload);
         });
     }
     /**
@@ -384,9 +403,8 @@ class VortexAPI {
      */
     quotes(instruments, mode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/data/quote";
             const params = { "q": instruments, "mode": mode };
-            return this._make_api_request("GET", endpoint, null, params);
+            return this._make_api_request("GET", Constants.URIQuotes, null, params);
         });
     }
     /**
@@ -400,9 +418,57 @@ class VortexAPI {
     */
     historical_candles(exchange, token, to, start, resolution) {
         return __awaiter(this, void 0, void 0, function* () {
-            const endpoint = "/data/history";
             const params = { "exchange": exchange, "token": token, "to": Math.floor(to.getTime() / 1000), "from": Math.floor(start.getTime() / 1000), "resolution": resolution };
-            return this._make_api_request("GET", endpoint, null, params);
+            return this._make_api_request("GET", Constants.URIHistory, null, params);
+        });
+    }
+    /**
+     * Retieves the user's saved order tags
+     * @returns A Promise that resolves to tags response.
+     * */
+    get_tags() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("GET", Constants.URITags);
+        });
+    }
+    /**
+     * Modifies an existing tag with the specified parameters.
+     * @param payload TagRequest
+     * @returns A Promise that resolves to a tag response.
+     */
+    modify_tag(tag_id, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URITag, tag_id.toString()));
+        });
+    }
+    /**
+    * Deletes an existing tag.
+    * @param payload TagRequest
+    * @returns A Promise that resolves to a tag response.
+    */
+    delete_tag(tag_id, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", constructUrl(Constants.URITag, tag_id.toString()));
+        });
+    }
+    withdraw_funds(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", Constants.URIWithdrawal, payload);
+        });
+    }
+    list_withdrawals() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("GET", Constants.URIWithdrawal);
+        });
+    }
+    cancel_withdrawal(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("PUT", Constants.URIWithdrawal, payload);
+        });
+    }
+    option_chain(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._make_api_request("POST", Constants.URIOptionChain, payload);
         });
     }
     download_master() {
@@ -440,3 +506,6 @@ class VortexAPI {
     }
 }
 exports.VortexAPI = VortexAPI;
+function constructUrl(templateUrl, ...params) {
+    return params.reduce((acc, param) => acc.replace('%s', param), templateUrl);
+}
