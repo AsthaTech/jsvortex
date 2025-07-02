@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.URITag = exports.URITags = exports.URIMTFInterestReport = exports.URIPnLReport = exports.URITurnoverDetailsReport = exports.URITurnoverSummaryReport = exports.URITradeReport = exports.URIPayoffStrategies = exports.URIBuildStrategies = exports.URIStrategies = exports.URIOptionChain = exports.URIHistory = exports.URIQuotes = exports.URIBasketMargin = exports.URIOrderMargin = exports.URIWithdrawal = exports.URIBrokerage = exports.URIBanks = exports.URIFunds = exports.URIHoldings = exports.URIConvertposition = exports.URIPositions = exports.URITrades = exports.URIOrderHistory = exports.URIMultiCancelrders = exports.URIOrderBook = exports.URIGttOrderBook = exports.URIDeleteMultipleOrder = exports.URIDeleteOrder = exports.URIModifyOrderTags = exports.URIModifyOrder = exports.URIPlaceOrder = exports.URIInstruments = exports.URISession = exports.URILogin = exports.OrderMarginModes = exports.ValidityTypes = exports.TrailJumpTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = exports.OptionType = exports.GttOrderStatus = exports.InstrumentName = void 0;
+exports.URITag = exports.URITags = exports.URIMTFInterestReport = exports.URIPnLReport = exports.URITurnoverDetailsReport = exports.URITurnoverSummaryReport = exports.URITradeReport = exports.URIPayoffStrategies = exports.URIBuildStrategies = exports.URIStrategies = exports.URIOptionChain = exports.URIHistory = exports.URIQuotes = exports.URIBasketMargin = exports.URIOrderMargin = exports.URIWithdrawal = exports.URIBrokerage = exports.URIBanks = exports.URIFunds = exports.URIHoldings = exports.URIConvertposition = exports.URIPositions = exports.URITrades = exports.URIOrderHistory = exports.URIMultiCancelrders = exports.URIOrderBook = exports.URIGttOrderBook = exports.URIDeleteMultipleOrder = exports.URIDeleteOrder = exports.URIModifyOrderTags = exports.URIModifyOrder = exports.URIPlaceOrder = exports.URIInstruments = exports.URISession = exports.URIExchangeToken = exports.URILogin = exports.OrderMarginModes = exports.ValidityTypes = exports.TrailJumpTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = exports.OptionType = exports.GttOrderStatus = exports.InstrumentName = void 0;
 var InstrumentName;
 (function (InstrumentName) {
     InstrumentName["EQIDX"] = "EQIDX";
@@ -101,6 +101,7 @@ var OrderMarginModes;
     OrderMarginModes["MODIFY_ORDER"] = "MODIFY";
 })(OrderMarginModes || (exports.OrderMarginModes = OrderMarginModes = {}));
 exports.URILogin = "/user/login";
+exports.URIExchangeToken = "/user/session";
 exports.URISession = "/user/session";
 exports.URIInstruments = "/data/instruments";
 exports.URIPlaceOrder = "/trading/orders/%s"; // "/trading/orders/regular"

@@ -39,6 +39,7 @@ exports.VortexAPI = void 0;
 const axios_1 = __importDefault(require("axios"));
 const Constants = __importStar(require("./types"));
 const csvParse = __importStar(require("csv-parse"));
+const CryptoJS = __importStar(require("crypto"));
 /**
  * VortexAPI is a class that provides methods to interact with the Vortex REST API.
  */
@@ -155,6 +156,21 @@ class VortexAPI {
                 // Call _setup_client_code method here if needed
                 return res;
             });
+        });
+    }
+    /**
+    * Exchange the auth code received in the callback url for a login object.
+    * @param auth_code The auth code received in the callback url.
+    * @returns A Promise that resolves to a login response.
+    */
+    exchange_token(auth_code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = {
+                token: auth_code,
+                applicationId: this.application_id,
+                checksum: CryptoJS.createHash('sha256').update(`${this.application_id}${auth_code}${this.api_key}`, 'utf8').digest('hex'),
+            };
+            return this._make_unauth_request("POST", Constants.URIExchangeToken, data);
         });
     }
     _setup_client_code(login_object) {
@@ -374,6 +390,9 @@ class VortexAPI {
         return __awaiter(this, void 0, void 0, function* () {
             return this._make_api_request("GET", Constants.URIFunds);
         });
+    }
+    sso_login_url(callback_param) {
+        return `https://flow.rupeezy.in?applicationId=${this.application_id}&cb_param=${callback_param}`;
     }
     /**
      * Calculates the margin requirement for a specific order.

@@ -26,6 +26,12 @@ export declare class VortexAPI {
     * @returns A Promise that resolves to a login response.
     */
     login(client_code: string, password: string, totp: string): Promise<Constants.LoginResponse>;
+    /**
+    * Exchange the auth code received in the callback url for a login object.
+    * @param auth_code The auth code received in the callback url.
+    * @returns A Promise that resolves to a login response.
+    */
+    exchange_token(auth_code: string): Promise<Constants.LoginResponse>;
     private _setup_client_code;
     set_access_token(accessToken: string): void;
     /**
@@ -140,6 +146,7 @@ export declare class VortexAPI {
      * @returns A Promise that resolves to a funds response.
      */
     funds(): Promise<Constants.FundsResponse>;
+    sso_login_url(callback_param: string): string;
     /**
      * Calculates the margin requirement for a specific order.
      * @param payload OrderMarginRequest

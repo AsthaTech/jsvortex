@@ -551,6 +551,15 @@
   dependencies:
     "lodash" "^4.17.21"
 
+"@rupeezy/jsvortex@^2.0.2":
+  "integrity" "sha512-1GFfGiGOiTz01f6EuBZ2c1HGGM2uMj6T17nPHi4TgBogqF5HwF8uz02hET+n6spV32QjLWNzzYaK1kR4g0bhkA=="
+  "resolved" "https://registry.npmjs.org/@rupeezy/jsvortex/-/jsvortex-2.0.2.tgz"
+  "version" "2.0.2"
+  dependencies:
+    "axios" "^1.4.0"
+    "csv-parse" "^5.4.0"
+    "ws" "^8.13.0"
+
 "@sinclair/typebox@^0.25.16":
   "integrity" "sha512-XJfwUVUKDHF5ugKwIcxEgc9k8b7HbznCp6eUfWgu710hMPNIO4aw4/zB5RogDQz8nd6gyCDpU9O/m6qYEWY6yQ=="
   "resolved" "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.25.24.tgz"

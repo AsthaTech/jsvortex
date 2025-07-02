@@ -697,6 +697,7 @@ export interface OptionDetail {
     delta: number;
 }
 export declare const URILogin: string;
+export declare const URIExchangeToken: string;
 export declare const URISession: string;
 export declare const URIInstruments: string;
 export declare const URIPlaceOrder: string;
