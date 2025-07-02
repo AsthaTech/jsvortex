@@ -877,6 +877,7 @@ export interface OptionDetail{
 }
 
 export const URILogin: string = "/user/login";
+export const URIExchangeToken: string = "/user/session";
 export const URISession: string = "/user/session";
 export const URIInstruments: string = "/data/instruments";
 export const URIPlaceOrder: string = "/trading/orders/%s"; // "/trading/orders/regular"

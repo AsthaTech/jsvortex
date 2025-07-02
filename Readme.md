@@ -12,7 +12,7 @@ Vortex APIs are meant for clients who want to execute orders based on their own 
 
 ## Installation 
 
-Install via [npm](https://www.npmjs.com/package/@asthatrade/jsvortex)
+Install via [npm](https://www.npmjs.com/package/@rupeezy/jsvortex)
 ```
 npm i @rupeezy/jsvortex@latest
 ``` 
@@ -25,13 +25,18 @@ The api methods always return a promise which you can use to call methods like `
 ## Getting Started with APIs 
 
 ```js
-var VortexAPI = require("@asthatrade/jsvortex").VortexAPI
-var Constants = require("@asthatrade/jsvortex").Constants
+var VortexAPI = require("@rupeezy/jsvortex").VortexAPI
+var Constants = require("@rupeezy/jsvortex").Constants
 
 var client = new VortexAPI("api_secret","application_id")
 
+// Get an auth code from sso login. SSO Login URL can be gotten by 
 
-client.login("client_code","password","totp").then(async (res)=> {
+var login_url = client.sso_login_url("any param of your choice")
+
+// Exchange auth code for access token
+var auth_code = "auth code received after login"
+client.exchange_token(auth_code).then(async (res)=> {
     await run()
 }).catch((err)=>{
     console.log(err)
@@ -61,8 +66,8 @@ async function run(){
 
 var JSONbig = require('json-bigint');
 
-var VortexFeed = require("@asthatrade/jsvortex").VortexFeed
-var Constants = require("@asthatrade/jsvortex").Constants
+var VortexFeed = require("@rupeezy/jsvortex").VortexFeed
+var Constants = require("@rupeezy/jsvortex").Constants
 
 const wire =  new VortexFeed("access_token",true,true)
 

@@ -3,6 +3,7 @@
 import axios, { Method } from 'axios';
 import * as Constants from "./types";
 import * as csvParse from 'csv-parse';
+import * as CryptoJS from 'crypto';
 /**
  * VortexAPI is a class that provides methods to interact with the Vortex REST API.
  */
@@ -123,6 +124,20 @@ export class VortexAPI {
                 // Call _setup_client_code method here if needed
                 return res;
             });
+    }
+
+    /**
+    * Exchange the auth code received in the callback url for a login object.
+    * @param auth_code The auth code received in the callback url.
+    * @returns A Promise that resolves to a login response.
+    */
+    async exchange_token(auth_code: string): Promise<Constants.LoginResponse> {
+        const data: object = {
+            token: auth_code,
+            applicationId: this.application_id,
+            checksum: CryptoJS.createHash('sha256').update(`${this.application_id}${auth_code}${this.api_key}`, 'utf8').digest('hex') ,
+        };
+        return this._make_unauth_request<Constants.LoginResponse>("POST", Constants.URIExchangeToken, data);
     }
 
     private _setup_client_code(login_object: Constants.LoginResponse): boolean {
@@ -327,6 +342,12 @@ export class VortexAPI {
     async funds(): Promise<Constants.FundsResponse> {
         return this._make_api_request<Constants.FundsResponse>("GET", Constants.URIFunds);
     }
+
+    sso_login_url(callback_param: string): string {
+        return `https://flow.rupeezy.in?applicationId=${this.application_id}&cb_param=${callback_param}`;
+    }
+
+
 
     /**
      * Calculates the margin requirement for a specific order.

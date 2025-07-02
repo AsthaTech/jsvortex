@@ -1,8 +1,8 @@
 
 var JSONbig = require('json-bigint');
 
-var VortexFeed = require("@asthatrade/jsvortex").VortexFeed
-var Constants = require("@asthatrade/jsvortex").Constants
+var VortexFeed = require("@rupeezy/jsvortex").VortexFeed
+var Constants = require("@rupeezy/jsvortex").Constants
 
 const wire =  new VortexFeed("access_token",true,true)
 

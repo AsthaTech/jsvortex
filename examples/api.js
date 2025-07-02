@@ -1,5 +1,5 @@
-var VortexAPI = require("@asthatrade/jsvortex").VortexAPI
-var Constants = require("@asthatrade/jsvortex").Constants
+var VortexAPI = require("@rupeezy/jsvortex").VortexAPI
+var Constants = require("@rupeezy/jsvortex").Constants
 
 var client = new VortexAPI("api_secret","application_id")
 
