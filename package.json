@@ -1,7 +1,7 @@
 {
-  "name": "@asthatrade/jsvortex",
+  "name": "@rupeezy/jsvortex",
   "version": "2.0.0",
-  "description": "Vortex APIs to place orders in AsthaTrade Flow application",
+  "description": "Vortex APIs to place orders in Rupeezy application",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Shauryam Gupta",
@@ -17,6 +17,7 @@
   "keywords": [
     "asthatrade",
     "astha",
+    "rupeezy",
     "vortex",
     "trading",
     "api",

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.URITag = exports.URITags = exports.URIMTFInterestReport = exports.URIPnLReport = exports.URITurnoverDetailsReport = exports.URITurnoverSummaryReport = exports.URITradeReport = exports.URIPayoffStrategies = exports.URIBuildStrategies = exports.URIStrategies = exports.URIOptionChain = exports.URIHistory = exports.URIQuotes = exports.URIBasketMargin = exports.URIOrderMargin = exports.URIWithdrawal = exports.URIBrokerage = exports.URIBanks = exports.URIFunds = exports.URIHoldings = exports.URIConvertposition = exports.URIPositions = exports.URITrades = exports.URIOrderHistory = exports.URIMultiCancelrders = exports.URIOrderBook = exports.URIGttOrderBook = exports.URIDeleteMultipleOrder = exports.URIDeleteOrder = exports.URIModifyOrderTags = exports.URIModifyOrder = exports.URIPlaceOrder = exports.URIInstruments = exports.URISession = exports.URILogin = exports.OrderMarginModes = exports.ValidityTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = exports.OptionType = exports.GttOrderStatus = exports.InstrumentName = void 0;
+exports.URITag = exports.URITags = exports.URIMTFInterestReport = exports.URIPnLReport = exports.URITurnoverDetailsReport = exports.URITurnoverSummaryReport = exports.URITradeReport = exports.URIPayoffStrategies = exports.URIBuildStrategies = exports.URIStrategies = exports.URIOptionChain = exports.URIHistory = exports.URIQuotes = exports.URIBasketMargin = exports.URIOrderMargin = exports.URIWithdrawal = exports.URIBrokerage = exports.URIBanks = exports.URIFunds = exports.URIHoldings = exports.URIConvertposition = exports.URIPositions = exports.URITrades = exports.URIOrderHistory = exports.URIMultiCancelrders = exports.URIOrderBook = exports.URIGttOrderBook = exports.URIDeleteMultipleOrder = exports.URIDeleteOrder = exports.URIModifyOrderTags = exports.URIModifyOrder = exports.URIPlaceOrder = exports.URIInstruments = exports.URISession = exports.URILogin = exports.OrderMarginModes = exports.ValidityTypes = exports.TrailJumpTypes = exports.VarietyTypes = exports.ProductTypes = exports.TransactionTypes = exports.ExchangeTypes = exports.QuoteModes = exports.Resolutions = exports.OptionType = exports.GttOrderStatus = exports.InstrumentName = void 0;
 var InstrumentName;
 (function (InstrumentName) {
     InstrumentName["EQIDX"] = "EQIDX";
@@ -60,7 +60,9 @@ var QuoteModes;
 var ExchangeTypes;
 (function (ExchangeTypes) {
     ExchangeTypes["NSE_FO"] = "NSE_FO";
+    ExchangeTypes["BSE_FO"] = "BSE_FO";
     ExchangeTypes["NSE_EQUITY"] = "NSE_EQ";
+    ExchangeTypes["BSE_EQUITY"] = "BSE_EQ";
     ExchangeTypes["NSE_CURRENCY"] = "NSE_CD";
     ExchangeTypes["MCX"] = "MCX_FO";
 })(ExchangeTypes || (exports.ExchangeTypes = ExchangeTypes = {}));
@@ -82,6 +84,11 @@ var VarietyTypes;
     VarietyTypes["STOP_LIMIT_ORDER"] = "SL";
     VarietyTypes["STOP_MARKET_ORDER"] = "SL-MKT";
 })(VarietyTypes || (exports.VarietyTypes = VarietyTypes = {}));
+var TrailJumpTypes;
+(function (TrailJumpTypes) {
+    TrailJumpTypes["PERCENT"] = "Percent";
+    TrailJumpTypes["POINT"] = "Point";
+})(TrailJumpTypes || (exports.TrailJumpTypes = TrailJumpTypes = {}));
 var ValidityTypes;
 (function (ValidityTypes) {
     ValidityTypes["FULL_DAY"] = "DAY";

@@ -14,7 +14,7 @@ Vortex APIs are meant for clients who want to execute orders based on their own 
 
 Install via [npm](https://www.npmjs.com/package/@asthatrade/jsvortex)
 ```
-npm i @asthatrade/jsvortex@latest
+npm i @rupeezy/jsvortex@latest
 ``` 
 
 ## Usage 

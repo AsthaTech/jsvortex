@@ -62,8 +62,7 @@ export interface BasketMarginResponse {
     initial_margin: number;
 }
 export interface FundsResponse {
-    nse: FundDetails;
-    mcx: FundDetails;
+    exchange_combined: FundDetails;
 }
 export interface HistoricalResponse {
     s: string;
@@ -257,6 +256,10 @@ interface OrderBookGttInfo {
     trigger_type: GttTriggerType;
     sl_trigger_percent?: number;
     profit_trigger_percent?: number;
+    sl_variety?: VarietyTypes;
+    profit_variety?: VarietyTypes;
+    trail_jump_point?: number;
+    trail_jump_type?: TrailJumpTypes;
 }
 export interface OrderBookResponse {
     status: string;
@@ -361,7 +364,9 @@ export declare enum QuoteModes {
 }
 export declare enum ExchangeTypes {
     NSE_FO = "NSE_FO",
+    BSE_FO = "BSE_FO",
     NSE_EQUITY = "NSE_EQ",
+    BSE_EQUITY = "BSE_EQ",
     NSE_CURRENCY = "NSE_CD",
     MCX = "MCX_FO"
 }
@@ -379,6 +384,10 @@ export declare enum VarietyTypes {
     REGULAR_MARKET_ORDER = "RL-MKT",
     STOP_LIMIT_ORDER = "SL",
     STOP_MARKET_ORDER = "SL-MKT"
+}
+export declare enum TrailJumpTypes {
+    PERCENT = "Percent",
+    POINT = "Point"
 }
 export declare enum ValidityTypes {
     FULL_DAY = "DAY",
@@ -435,7 +444,11 @@ export interface GttOrderModificationResponse {
 }
 export interface GttLegs {
     sl_trigger_percent?: number;
+    sl_variety?: VarietyTypes;
     profit_trigger_percent?: number;
+    profit_variety?: VarietyTypes;
+    trail_jump_point?: number;
+    trail_jump_type?: TrailJumpTypes;
 }
 export interface PlaceIcebergOrderResponse {
     status?: string;
