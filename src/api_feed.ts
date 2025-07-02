@@ -10,7 +10,7 @@ export class VortexFeed {
     private triggers: Record<string, Function[]>;
     private subscriptions: Record<string,Record<number,string>[]>; 
     private auto_reconnect: boolean;
-    constructor(access_token: string, enable_logging: boolean, auto_reconnect: boolean = false, reconnectInterval: number = 3000, reconnectAttempts: number = Infinity, url: string = "wss://wire.asthatrade.com/ws") {
+    constructor(access_token: string, enable_logging: boolean, auto_reconnect: boolean = false, reconnectInterval: number = 3000, reconnectAttempts: number = Infinity, url: string = "wss://wire.rupeezy.in/ws") {
         this.connection = null;
         this.url = url;
         this.reconnectInterval = reconnectInterval;

@@ -17,7 +17,7 @@ export class VortexAPI {
      * Creates an instance of the VortexAPI class.
      * @param api_key The API key for authentication.
      * @param application_id The application ID for the API.
-     * @param base_url The base URL of the Vortex API (default: "https://vortex.restapi.asthatrade.com").
+     * @param base_url The base URL of the Vortex API (default: "https://vortex-api.rupeezy.in/v2").
      * @param enable_logging Determines whether logging is enabled (default: false).
      */
     constructor(api_key: string, application_id: string, base_url: string = "https://vortex-api.rupeezy.in/v2", enable_logging: boolean = false) {

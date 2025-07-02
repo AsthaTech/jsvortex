@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VortexFeed = void 0;
 const WebSocket = __importStar(require("ws"));
 class VortexFeed {
-    constructor(access_token, enable_logging, auto_reconnect = false, reconnectInterval = 3000, reconnectAttempts = Infinity, url = "wss://wire.asthatrade.com/ws") {
+    constructor(access_token, enable_logging, auto_reconnect = false, reconnectInterval = 3000, reconnectAttempts = Infinity, url = "wss://wire.rupeezy.in/ws") {
         this.connection = null;
         this.url = url;
         this.reconnectInterval = reconnectInterval;

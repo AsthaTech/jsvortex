@@ -160,8 +160,7 @@ function runtests() {
         it("is success", async () => {
             // expect.assertions(2)
             const res = await api.funds()
-            expect(res.nse).toBeDefined
-            expect(res.mcx).toBeDefined
+            expect(res.exchange_combined).toBeDefined
         })
 
         it("is internal server error", async () => {
